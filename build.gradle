@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'enes.plugin'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot:1.19.4-R0.1-SNAPSHOT'
+    implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
+}
+
+compileJava.options.encoding = 'UTF-8'
+setLibsDirName('../server/plugins')
