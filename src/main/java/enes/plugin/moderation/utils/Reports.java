@@ -9,7 +9,7 @@ public class Reports {
     private final Players players;
     private final Database database;
 
-    public Reports(Database database) {
+    private Reports(Database database) {
         this.database = database;
         this.players = Players.getInstance(database);
     }
