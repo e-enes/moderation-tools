@@ -1,6 +1,5 @@
 package enes.plugin.moderation.coommands;
 
-import enes.plugin.moderation.storage.Database;
 import enes.plugin.moderation.storage.cache.Data;
 import enes.plugin.moderation.utils.Players;
 import enes.plugin.moderation.utils.Reports;
@@ -17,9 +16,9 @@ public class Report implements CommandExecutor {
     private final Reports reports;
     private final Players players;
 
-    public Report(Database database) {
-        this.reports = Reports.getInstance(database);
-        this.players = Players.getInstance(database);
+    public Report(Reports reports, Players players) {
+        this.reports = reports;
+        this.players = players;
     }
 
     @Override
