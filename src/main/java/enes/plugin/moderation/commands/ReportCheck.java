@@ -1,6 +1,5 @@
 package enes.plugin.moderation.coommands;
 
-import enes.plugin.moderation.storage.Database;
 import enes.plugin.moderation.utils.Reports;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,8 +11,8 @@ import org.bukkit.entity.Player;
 public class ReportCheck implements CommandExecutor {
     private final Reports reports;
 
-    public ReportCheck(Database database) {
-        this.reports = Reports.getInstance(database);
+    public ReportCheck(Reports reports) {
+        this.reports = reports;
     }
 
     @Override
