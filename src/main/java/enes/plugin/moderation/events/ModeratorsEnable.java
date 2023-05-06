@@ -29,8 +29,9 @@ import java.util.Random;
 public class ModeratorsEnable implements Listener {
     private final Players players;
     private final Plugin plugin;
-    public ModeratorsEnable(Database playerDatabase, Plugin plugin) {
-        this.players = Players.getInstance(playerDatabase);
+    
+    public ModeratorsEnable(Players players, Plugin plugin) {
+        this.players = players;
         this.plugin = plugin;
     }
 
