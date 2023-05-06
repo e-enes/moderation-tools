@@ -7,13 +7,15 @@ import java.sql.Statement;
 
 public class Database {
     private final Connection connection;
+    private final String filename;
 
     public Database(String filename) throws SQLException {
+        this.filename = filename;
         this.connection = DriverManager.getConnection("jdbc:sqlite:" + filename);
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:plugins/ModerationTools/database.db");
+        return DriverManager.getConnection("jdbc:sqlite:" + filename);
     }
 
     public void createTable() throws SQLException {
