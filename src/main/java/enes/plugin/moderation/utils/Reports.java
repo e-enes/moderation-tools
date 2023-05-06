@@ -5,20 +5,10 @@ import enes.plugin.moderation.storage.Database;
 import java.sql.*;
 
 public class Reports {
-    private static Reports instance;
-    private final Players players;
     private final Database database;
 
-    private Reports(Database database) {
+    public Reports(Database database) {
         this.database = database;
-        this.players = Players.getInstance(database);
-    }
-
-    public static synchronized Reports getInstance(Database database) {
-        if (instance == null) {
-            instance = new Reports(database);
-        }
-        return instance;
     }
 
     public void add(String reporter, String reported, String reason) {
@@ -46,13 +36,11 @@ public class Reports {
                         String reported = res.getString("reported");
                         String reason = res.getString("reason");
                         Timestamp createdAtTimestamp = res.getTimestamp("created_at");
-                        String reportCount = players.reportCount(name);
                         return "§f§l---- Report Check (Last) -------------\n" +
                                 "§2Player: §3§l" + reported + "\n" +
                                 "§2Last reported by: §b§l" + reporter + "\n" +
                                 "§2For: §9§l" + reason + "\n" +
                                 "§2On: §6§l" + createdAtTimestamp + "\n" +
-                                "§2Total reports: §9§l" + reportCount + "\n" +
                                 "§f§l---------------------------------------";
                     }
                 }
