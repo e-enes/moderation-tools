@@ -1,6 +1,5 @@
 package enes.plugin.moderation.events;
 
-import enes.plugin.moderation.storage.Database;
 import enes.plugin.moderation.storage.cache.Data;
 import enes.plugin.moderation.utils.Players;
 import org.bukkit.Bukkit;
