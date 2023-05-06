@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 public class Moderator implements CommandExecutor {
     private final Plugin plugin;
+    
     public Moderator(Plugin plugin) {
         this.plugin = plugin;
     }
