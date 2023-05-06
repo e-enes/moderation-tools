@@ -22,7 +22,7 @@ This repository contains a Minecraft plugin written in Java using Gradle that pr
 
 ## Installation
 To install the plugin, follow these steps:
-1. Download the plugin jar file from the `releases` folder.
+1. Download the plugin jar file from the `releases` section.
 2. Copy the jar file into the `plugins` folder of your Minecraft server.
 3. Start the server.
 
