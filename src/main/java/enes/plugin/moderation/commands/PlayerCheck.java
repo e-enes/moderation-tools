@@ -1,6 +1,5 @@
 package enes.plugin.moderation.coommands;
 
-import enes.plugin.moderation.storage.Database;
 import enes.plugin.moderation.utils.Players;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,8 +10,8 @@ import org.bukkit.entity.Player;
 public class PlayerCheck implements CommandExecutor {
     private final Players players;
 
-    public PlayerCheck(Database database) {
-        this.players = Players.getInstance(database);
+    public PlayerCheck(Players players) {
+        this.players = players;
     }
 
     @Override
