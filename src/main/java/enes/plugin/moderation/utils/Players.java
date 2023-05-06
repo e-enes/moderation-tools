@@ -5,18 +5,10 @@ import enes.plugin.moderation.storage.Database;
 import java.sql.*;
 
 public class Players {
-    private static Players instance;
     private final Database database;
 
-    private Players(Database database) {
+    public Players(Database database) {
         this.database = database;
-    }
-
-    public static synchronized Players getInstance(Database database) {
-        if (instance == null) {
-            instance = new Players(database);
-        }
-        return instance;
     }
 
     public void add(String name) {
