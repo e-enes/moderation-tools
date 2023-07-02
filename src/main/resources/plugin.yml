@@ -6,20 +6,16 @@ main: enes.plugin.moderation.Main
 commands:
   report:
     description: Report a player
-    usage: /report <player>
+    usage: /<command> <player>
   moderator:
     description: Enable moderator mode
-    usage: /moderator
-    permission: moderator.use
+    usage: /<command>
+    permission: moderator.use.mod
   report-check:
     description: View reports of a player
-    usage: /report-check <player>
-    permission: moderator.use
-    aliases:
-      - rck
+    usage: /<command> <player>
+    permission: moderator.use.report
   player-check:
     description: View a player's information
-    usage: /player-check <player>
-    permission: moderator.use
-    aliases:
-      - pck
+    usage: /<command> <player>
+    permission: moderator.use.player

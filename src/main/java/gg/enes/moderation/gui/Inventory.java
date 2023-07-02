@@ -1,6 +1,6 @@
-package enes.plugin.moderation.gui;
+package gg.enes.moderation.gui;
 
-import enes.plugin.moderation.storage.cache.Data;
+import gg.enes.moderation.storage.CacheManager;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -9,33 +9,31 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public class Moderators {
-    public static class inventory {
-        public static void set(Player player) {
-            player.getInventory().clear();
-            player.getInventory().setHelmet(null);
-            player.getInventory().setChestplate(null);
-            player.getInventory().setLeggings(null);
-            player.getInventory().setBoots(null);
+public class Inventory {
+    public static void set(Player player) {
+        player.getInventory().clear();
+        player.getInventory().setHelmet(null);
+        player.getInventory().setChestplate(null);
+        player.getInventory().setLeggings(null);
+        player.getInventory().setBoots(null);
 
-            player.getInventory().setItem(0, eyeOfEnder());
-            player.getInventory().setItem(1, book());
-            player.getInventory().setItem(2, ice());
-            player.getInventory().setItem(4, stick());
-            player.getInventory().setItem(5, compass());
-            player.getInventory().setItem(8, barrier());
+        player.getInventory().setItem(0, eyeOfEnder());
+        player.getInventory().setItem(1, book());
+        player.getInventory().setItem(2, ice());
+        player.getInventory().setItem(4, stick());
+        player.getInventory().setItem(5, compass());
+        player.getInventory().setItem(8, barrier());
 
-            player.updateInventory();
-        }
+        player.updateInventory();
+    }
 
-        public static void save(Player player) {
-            Data.inventory.save(player);
-        }
+    public static void save(Player player) {
+        CacheManager.inventory.save(player);
+    }
 
-        public static void restore(Player player) {
-            ItemStack[] contents = Data.inventory.restore(player.getName());
-            player.getInventory().setContents(contents);
-        }
+    public static void restore(Player player) {
+        ItemStack[] contents = CacheManager.inventory.restore(player.getName());
+        player.getInventory().setContents(contents);
     }
 
     private static ItemStack eyeOfEnder() {

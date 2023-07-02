@@ -2,17 +2,21 @@ plugins {
     id 'java'
 }
 
-group 'enes.plugin'
-version '1.0'
+group 'gg.enes.moderation'
+version '1.1-SNAPSHOP'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+
+    maven {
+        name = "spigot"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot:1.19.4-R0.1-SNAPSHOT'
-    implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
+    compileOnly 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
 }
 
 compileJava.options.encoding = 'UTF-8'

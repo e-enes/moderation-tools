@@ -1,25 +1,26 @@
-package enes.plugin.moderation.storage;
+package gg.enes.moderation.storage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Database {
-    private final Connection connection;
-    private final String filename;
+public abstract class DatabaseUtil {
+    private static String URL;
 
-    public Database(String filename) throws SQLException {
-        this.filename = filename;
-        this.connection = DriverManager.getConnection("jdbc:sqlite:" + filename);
+    public static void setFilename(String fileName) throws SQLException {
+        if (URL == null) {
+            URL = fileName;
+            createTable();
+        }
     }
 
-    public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:" + filename);
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:sqlite:" + URL);
     }
 
-    public void createTable() throws SQLException {
-        Statement statement = connection.createStatement();
+    private static void createTable() throws SQLException {
+        Statement statement = getConnection().createStatement();
 
         statement.execute("CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTOINCREMENT, reporter TEXT, reported TEXT, reason TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
         statement.execute("CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY AUTOINCREMENT, player_name TEXT, report_count TEXT NOT NULL DEFAULT 0, ban_count TEXT NOT NULL DEFAULT NaN, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");

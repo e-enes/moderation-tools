@@ -1,18 +1,24 @@
-package enes.plugin.moderation.utils;
+package gg.enes.moderation.dao;
 
-import enes.plugin.moderation.storage.Database;
+import gg.enes.moderation.storage.DatabaseUtil;
 
 import java.sql.*;
 
-public class Players {
-    private final Database database;
+public class PlayerDAO {
+    private PlayerDAO() {
 
-    public Players(Database database) {
-        this.database = database;
+    }
+
+    private static final class InstanceHolder {
+        private static final PlayerDAO instance = new PlayerDAO();
+    }
+
+    public static PlayerDAO getInstance() {
+        return InstanceHolder.instance;
     }
 
     public void add(String name) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String existsPlayerSql = "SELECT player_name FROM players WHERE player_name = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(existsPlayerSql)) {
                 pstmt.setString(1, name);
@@ -31,9 +37,8 @@ public class Players {
         }
     }
 
-
     public void reported(String name) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String updatePlayerSql = "UPDATE players SET report_count = report_count + 1 WHERE player_name = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(updatePlayerSql)) {
                 pstmt.setString(1, name);
@@ -45,7 +50,7 @@ public class Players {
     }
 
     public String reportCount(String name) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String selectPlayerSql = "SELECT report_count FROM players WHERE player_name = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(selectPlayerSql)) {
                 pstmt.setString(1, name);
@@ -62,7 +67,7 @@ public class Players {
     }
 
     public String get(String name) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String selectPlayerSql = "SELECT * FROM players WHERE player_name = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(selectPlayerSql)) {
                 pstmt.setString(1, name);

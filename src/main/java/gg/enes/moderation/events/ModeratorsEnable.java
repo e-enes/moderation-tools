@@ -1,7 +1,8 @@
-package enes.plugin.moderation.events;
+package gg.enes.moderation.events;
 
-import enes.plugin.moderation.storage.cache.Data;
-import enes.plugin.moderation.utils.Players;
+import gg.enes.moderation.Main;
+import gg.enes.moderation.dao.PlayerDAO;
+import gg.enes.moderation.storage.CacheManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -26,17 +27,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ModeratorsEnable implements Listener {
-    private final Players players;
-    private final Plugin plugin;
-    
-    public ModeratorsEnable(Players players, Plugin plugin) {
-        this.players = players;
-        this.plugin = plugin;
-    }
+    private final Plugin plugin = Main.getInstance();
+    private final PlayerDAO playerDAO = PlayerDAO.getInstance();
 
     @EventHandler
     public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
-        boolean isMod = Data.moderator.has(event.getPlayer().getName());
+        boolean isMod = CacheManager.moderator.has(event.getPlayer().getName());
         if (isMod) {
             event.setCancelled(true);
         }
@@ -44,7 +40,7 @@ public class ModeratorsEnable implements Listener {
 
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event) {
-        boolean isMod = Data.moderator.has(event.getWhoClicked().getName());
+        boolean isMod = CacheManager.moderator.has(event.getWhoClicked().getName());
         if (isMod) {
             event.setCancelled(true);
         }
@@ -53,7 +49,7 @@ public class ModeratorsEnable implements Listener {
     @EventHandler
     public void onPlayerPickupItemEvent(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
-            boolean isMod = Data.moderator.has(event.getEntity().getName());
+            boolean isMod = CacheManager.moderator.has(event.getEntity().getName());
             if (isMod) {
                 event.setCancelled(true);
             }
@@ -62,7 +58,7 @@ public class ModeratorsEnable implements Listener {
 
     @EventHandler
     public void onBlockPlaceEvent(BlockPlaceEvent event) {
-        boolean isMod = Data.moderator.has(event.getPlayer().getName());
+        boolean isMod = CacheManager.moderator.has(event.getPlayer().getName());
         if (isMod) {
             event.setCancelled(true);
         }
@@ -70,7 +66,7 @@ public class ModeratorsEnable implements Listener {
 
     @EventHandler
     public void onBlockBreakEvent(BlockBreakEvent event) {
-        boolean isMod = Data.moderator.has(event.getPlayer().getName());
+        boolean isMod = CacheManager.moderator.has(event.getPlayer().getName());
         if (isMod) {
             event.setCancelled(true);
         }
@@ -79,7 +75,7 @@ public class ModeratorsEnable implements Listener {
     @EventHandler
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if ((event.getEntity() instanceof Player)) {
-            boolean isMod = Data.moderator.has(event.getEntity().getName());
+            boolean isMod = CacheManager.moderator.has(event.getEntity().getName());
             if (isMod) {
                 event.setCancelled(true);
             }
@@ -89,7 +85,7 @@ public class ModeratorsEnable implements Listener {
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
         if (event.getHand() != EquipmentSlot.OFF_HAND && event.getRightClicked().getType() == EntityType.PLAYER) {
-            boolean isMod = Data.moderator.has(event.getPlayer().getName());
+            boolean isMod = CacheManager.moderator.has(event.getPlayer().getName());
             if (isMod) {
                 Player player = event.getPlayer();
                 Player player1 = Bukkit.getPlayer(event.getRightClicked().getName());
@@ -103,20 +99,20 @@ public class ModeratorsEnable implements Listener {
                             event.setCancelled(true);
                         }
                         case ("BOOK") -> {
-                            String reportCount = players.reportCount(player1.getName());
+                            String reportCount = playerDAO.reportCount(player1.getName());
                             player.sendMessage("§2This player has §c§l" +  reportCount + " §2reports.");
                             event.setCancelled(true);
                         }
                         case ("ICE") -> {
-                            boolean isFrozen = Data.freeze.has(player1.getName());
+                            boolean isFrozen = CacheManager.freeze.has(player1.getName());
                             if (isFrozen) {
                                 player.sendMessage("§2This player is no longer frozen.");
                                 player1.sendMessage("§2You are no longer frozen.");
-                                Data.freeze.remove(player1.getName());
+                                CacheManager.freeze.remove(player1.getName());
                             } else {
                                 player.sendMessage("§3This player has been frozen.");
                                 player1.sendMessage("§cYou have been frozen. You can't move.");
-                                Data.freeze.add(player1.getName());
+                                CacheManager.freeze.add(player1.getName());
                             }
                             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 4f, 4f);
                             player1.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 4f, 4f);
@@ -126,6 +122,7 @@ public class ModeratorsEnable implements Listener {
                         default -> event.setCancelled(true);
                     }
                 }
+
                 event.setCancelled(true);
             }
         }
@@ -133,7 +130,7 @@ public class ModeratorsEnable implements Listener {
 
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        boolean isMod = Data.moderator.has(event.getPlayer().getName());
+        boolean isMod = CacheManager.moderator.has(event.getPlayer().getName());
         if (isMod) {
             Player player = event.getPlayer();
             ItemStack itemStack = event.getItem();
@@ -153,7 +150,7 @@ public class ModeratorsEnable implements Listener {
                         }
                     }
                     case ("BARRIER") -> {
-                        if (Data.moderator.vanish.has(player.getName())) {
+                        if (CacheManager.moderator.vanish.has(player.getName())) {
                             player.sendMessage("§3Vanish has been §c§ldisabled.");
                             ItemMeta itemMeta = itemStack.getItemMeta();
                             itemMeta.setDisplayName("§6Activate vanish");
@@ -161,7 +158,7 @@ public class ModeratorsEnable implements Listener {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 p.showPlayer(plugin, player);
                             }
-                            Data.moderator.vanish.remove(player.getName());
+                            CacheManager.moderator.vanish.remove(player.getName());
                         } else {
                             player.sendMessage("§3Vanish has been §2§lenabled.");
                             ItemMeta itemMeta = itemStack.getItemMeta();
@@ -170,11 +167,12 @@ public class ModeratorsEnable implements Listener {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 p.hidePlayer(plugin, player);
                             }
-                            Data.moderator.vanish.add(player.getName());
+                            CacheManager.moderator.vanish.add(player.getName());
                         }
                     }
                 }
             }
+
             event.setCancelled(true);
         }
     }

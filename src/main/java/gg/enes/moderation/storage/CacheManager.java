@@ -1,4 +1,4 @@
-package enes.plugin.moderation.storage.cache;
+package gg.enes.moderation.storage;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,11 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Data {
+public abstract class CacheManager {
     private static final HashMap<String, Boolean> isMod = new HashMap<>();
     private static final HashMap<String, Boolean> isVanish = new HashMap<>();
     private static final HashMap<String, Boolean> isFrozen = new HashMap<>();
-
     private static final HashMap<String, ItemStack[]> inventory = new HashMap<>();
 
     public static class moderator {

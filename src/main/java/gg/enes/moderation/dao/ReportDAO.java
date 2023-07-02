@@ -1,18 +1,24 @@
-package enes.plugin.moderation.utils;
+package gg.enes.moderation.dao;
 
-import enes.plugin.moderation.storage.Database;
+import gg.enes.moderation.storage.DatabaseUtil;
 
 import java.sql.*;
 
-public class Reports {
-    private final Database database;
+public class ReportDAO {
+    private ReportDAO() {
 
-    public Reports(Database database) {
-        this.database = database;
+    }
+
+    private static final class InstanceHolder {
+        private static final ReportDAO instance = new ReportDAO();
+    }
+
+    public static ReportDAO getInstance() {
+        return InstanceHolder.instance;
     }
 
     public void add(String reporter, String reported, String reason) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String insertReportSql = "INSERT INTO reports (reporter, reported, reason) VALUES (?, ?, ?)";
             try (PreparedStatement pstmt = connection.prepareStatement(insertReportSql)) {
                 pstmt.setString(1, reporter);
@@ -26,7 +32,7 @@ public class Reports {
     }
 
     public String getLast(String name) {
-        try (Connection connection = database.getConnection()) {
+        try (Connection connection = DatabaseUtil.getConnection()) {
             String selectLastReportSql = "SELECT * FROM reports WHERE reported = ? ORDER BY created_at DESC LIMIT 1";
             try (PreparedStatement pstmt = connection.prepareStatement(selectLastReportSql)) {
                 pstmt.setString(1, name);
