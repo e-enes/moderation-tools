@@ -278,3 +278,7 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+### Local Development Server ###
+/server
+/server/spigot-1.19.4.jar

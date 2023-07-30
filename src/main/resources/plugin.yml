@@ -1,22 +1,27 @@
 name: ModerationTools
-version: 1.0
+version: 1.2
 api-version: 1.19
 author: https://github.com/enes-th/minecraft-moderations-tools
 main: gg.enes.moderation.Main
+load: POSTWORLD
+libraries:
+  - org.json:json:20230618
 commands:
   report:
     description: Report a player
-    usage: /<command> <player>
   moderator:
-    description: Enable moderator mode
-    usage: /<command>
-    permission: moderator.use.mod
-  report-check:
-    description: View reports of a player
-    usage: /<command> <player>
-    permission: moderator.use.report
-  player-check:
-    description: View a player's information
-    usage: /<command> <player>
-    permission: moderator.use.player
-load: POSTWORLD
+    description: Enter moderator mode
+  player:
+    description: Watch/Purge a player's information
+  ban:
+    description: Ban a player from the server
+  mute:
+    description: Mute a player, preventing them from chatting
+  kick:
+    description: Kick a player from the server
+  unban:
+    description: Unban a player, allowing them to join the server again
+  unmute:
+    description: Unmute a player, allowing them to chat again
+  freeze:
+    description: Freeze a player, preventing them from moving or taking any action
