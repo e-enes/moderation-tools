@@ -17,7 +17,7 @@ public abstract class IPUtil {
     /**
      * Method to check various attributes of an IP address.
      *
-     * @param ip The timestamp to calculate relative time from
+     * @param ip The user's IP
      * @return The attributes of IP as a string
      */
     public static String check(String ip) {
