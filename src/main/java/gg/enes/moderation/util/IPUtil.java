@@ -29,36 +29,37 @@ public abstract class IPUtil {
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
 
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-                reader.close();
-
-                String responseString = response.toString();
-                JSONObject jsonObject = new JSONObject(responseString);
-
-                boolean mobile = jsonObject.getBoolean("mobile");
-                boolean proxy = jsonObject.getBoolean("proxy");
-                boolean hosting = jsonObject.getBoolean("hosting");
-
-                if (mobile) {
-                    return "mobile";
-                }
-
-                if (proxy) {
-                    return "proxy";
-                }
-
-                if (hosting) {
-                    return "hosting";
-                }
-            } else {
+            if (responseCode != HttpURLConnection.HTTP_OK) {
                 logger.log(Level.WARNING, "Received HTTP response code: " + responseCode);
+                return null;
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            String responseString = response.toString();
+            JSONObject jsonObject = new JSONObject(responseString);
+
+            boolean mobile = jsonObject.getBoolean("mobile");
+            if (mobile) {
+                return "mobile";
+            }
+
+            boolean proxy = jsonObject.getBoolean("proxy");
+            if (proxy) {
+                return "proxy";
+            }
+
+            boolean hosting = jsonObject.getBoolean("hosting");
+            if (hosting) {
+                return "hosting";
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred while checking IP.");
