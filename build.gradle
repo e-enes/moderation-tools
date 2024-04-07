@@ -2,27 +2,42 @@ plugins {
     id 'java'
 }
 
-group 'gg.enes.moderation'
-version '1.2-SNAPSHOP'
+allprojects { project ->
+    group 'gg.enes.moderation'
+    version '2.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
+    project.afterEvaluate {
+        if (!project.path.contains(":modules:")) {
+            compileJava {
+                enabled = false
+            }
 
-    maven {
-        name = "spigot"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+            jar {
+                enabled = false
+            }
+        }
     }
 }
 
-dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
-    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
-    implementation 'org.json:json:20230618'
 
-    if (project.hasProperty('devMode') && devMode.toBoolean()) {
-        compileJava {
-            options.encoding = 'UTF-8'
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
         }
-        setLibsDirName('../server/plugins')
+    }
+
+    jar {
+        archiveBaseName = "ModerationTools"
+    }
+
+    compileJava {
+        options.encoding = "UTF-8"
     }
 }

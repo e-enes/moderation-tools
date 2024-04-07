@@ -1,1 +1,9 @@
-rootProject.name = 'ModerationTools'
+rootProject.name = 'moderation-tools'
+
+include 'modules:bungeecord', 'modules:core', 'modules:paper', 'modules:spigot', 'modules:velocity'
+
+project(':modules:bungeecord').projectDir = file('modules/bungeecord')
+project(':modules:core').projectDir = file('modules/core')
+project(':modules:paper').projectDir = file('modules/paper')
+project(':modules:spigot').projectDir = file('modules/spigot')
+project(':modules:velocity').projectDir = file('modules/velocity')
