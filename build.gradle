@@ -2,23 +2,13 @@ plugins {
     id 'java'
 }
 
-allprojects { project ->
-    group 'gg.enes.moderation'
-    version '2.0-SNAPSHOT'
-
-    project.afterEvaluate {
-        if (!project.path.contains(":modules:")) {
-            compileJava {
-                enabled = false
-            }
-
-            jar {
-                enabled = false
-            }
-        }
-    }
+compileJava {
+    enabled = false
 }
 
+jar {
+    enabled = false
+}
 
 subprojects {
     apply plugin: 'java'
@@ -26,6 +16,9 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
+    group 'gg.enes.moderation'
+    version '2.0-SNAPSHOT'
 
     java {
         toolchain {
