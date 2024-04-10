@@ -1,36 +1,50 @@
 package gg.enes.moderation.core.entity;
 
 import gg.enes.moderation.core.entity.annotations.Column;
+import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Table(name = "users")
 public class User extends BaseEntity {
-    @Column(name = "uuid", primary = true)
+    @Id()
+    @Column(name = "user_id")
+    private Long id;
+
+    @Column(name = "uuid", nullable = false)
     private UUID uuid;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "ip")
+    @Column(name = "ip", nullable = false)
     private String ip;
 
-    @Column(name = "muted")
+    @Column(name = "muted", nullable = false, defaultValue = "false")
     private Boolean muted;
 
-    @Column(name = "banned")
+    @Column(name = "banned", nullable = false, defaultValue = "false")
     private Boolean banned;
 
-    @Column(name = "last_activity")
-    private LocalDateTime lastActivity;
+    @Column(name = "last_login", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
+    private Timestamp lastLogin;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "joined_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
+    private Timestamp joinedAt;
 
     public User() {
         super();
+    }
+
+    public User setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public Long getId() {
+        return this.id;
     }
 
     public User setUuid(UUID uuid) {
@@ -78,21 +92,21 @@ public class User extends BaseEntity {
         return this.banned;
     }
 
-    public User setLastActivity(LocalDateTime lastActivity) {
-        this.lastActivity = lastActivity;
+    public User setLastLogin(Timestamp lastLogin) {
+        this.lastLogin = lastLogin;
         return this;
     }
 
-    public LocalDateTime getLastActivity() {
-        return this.lastActivity;
+    public Timestamp getLastLogin() {
+        return this.lastLogin;
     }
 
-    public User setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public User setJoinedAt(Timestamp joinedAt) {
+        this.joinedAt = joinedAt;
         return this;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
+    public Timestamp getJoinedAt() {
+        return this.joinedAt;
     }
 }

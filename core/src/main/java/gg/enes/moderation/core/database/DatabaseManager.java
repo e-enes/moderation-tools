@@ -21,6 +21,24 @@ public class DatabaseManager {
         if (dataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
 
+
+            if ("sqlite".equalsIgnoreCase(config.getDbType())) {
+                hikariConfig.setDriverClassName("org.sqlite.JDBC");
+                hikariConfig.setJdbcUrl("jdbc:sqlite:" + config.getFileName());
+                hikariConfig.setMaximumPoolSize(10);
+            } else if ("mysql".equalsIgnoreCase(config.getDbType())) {
+                hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+                hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%d/%s", config.getHost(), config.getPort(), config.getDatabaseName()));
+                hikariConfig.setUsername(config.getUsername());
+                hikariConfig.setPassword(config.getPassword());
+                hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+                hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+                hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                hikariConfig.setMaximumPoolSize(20);
+            } else {
+                throw new IllegalArgumentException("Unsupported database type: " + config.getDbType());
+            }
+
             dataSource = new HikariDataSource(hikariConfig);
         }
     }

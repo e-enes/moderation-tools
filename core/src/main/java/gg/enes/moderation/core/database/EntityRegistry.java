@@ -2,12 +2,11 @@ package gg.enes.moderation.core.database;
 
 import gg.enes.moderation.core.entity.annotations.Table;
 import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 
 import java.util.Set;
 
 public class EntityRegistry {
-    private static final String ENTITY_PACKAGE = "gg.enes.core.entity";
+    private static final String ENTITY_PACKAGE = "gg.enes.moderation.core.entity";
 
     /**
      * Uses Reflections to find all entity classes annotated with @Table within the entity package.
@@ -15,7 +14,7 @@ public class EntityRegistry {
      * @return A set of entity classes.
      */
     public static Set<Class<?>> getEntityClasses() {
-        Reflections reflections = new Reflections(ENTITY_PACKAGE, Scanners.TypesAnnotated.with(Table.class));
+        Reflections reflections = new Reflections(ENTITY_PACKAGE);
         return reflections.getTypesAnnotatedWith(Table.class);
     }
 }
