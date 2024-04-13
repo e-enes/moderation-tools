@@ -1,7 +1,7 @@
 package gg.enes.moderation.core.database.config;
 
 public class DatabaseConfig {
-    private String dbType;
+    private DatabaseType dbType;
     private String fileName;
 
     private String host;
@@ -10,12 +10,12 @@ public class DatabaseConfig {
     private String username;
     private String password;
 
-    public DatabaseConfig setDbType(String dbType) {
+    public DatabaseConfig setDbType(DatabaseType dbType) {
         this.dbType = dbType;
         return this;
     }
 
-    public String getDbType() {
+    public DatabaseType getDbType() {
         return this.dbType;
     }
 
@@ -73,3 +73,4 @@ public class DatabaseConfig {
         return this.password;
     }
 }
+

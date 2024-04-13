@@ -3,12 +3,14 @@ package gg.enes.moderation.core.database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
+import gg.enes.moderation.core.database.config.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseManager {
     private static HikariDataSource dataSource;
+    private static DatabaseType dbType;
 
     private DatabaseManager() {}
 
@@ -21,12 +23,13 @@ public class DatabaseManager {
         if (dataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
 
+            dbType = config.getDbType();
 
-            if ("sqlite".equalsIgnoreCase(config.getDbType())) {
+            if (dbType == DatabaseType.Sqlite) {
                 hikariConfig.setDriverClassName("org.sqlite.JDBC");
                 hikariConfig.setJdbcUrl("jdbc:sqlite:" + config.getFileName());
                 hikariConfig.setMaximumPoolSize(10);
-            } else if ("mysql".equalsIgnoreCase(config.getDbType())) {
+            } else if (dbType == DatabaseType.Mysql) {
                 hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
                 hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%d/%s", config.getHost(), config.getPort(), config.getDatabaseName()));
                 hikariConfig.setUsername(config.getUsername());
@@ -44,12 +47,21 @@ public class DatabaseManager {
     }
 
     /**
+     * Retrieves the type of the database currently configured.
+     *
+     * @return The current database type as a DatabaseType enum.
+     */
+    public static DatabaseType getDatabaseType() {
+        return dbType;
+    }
+
+    /**
      * Obtains a connection from the connection pool.
      *
      * @return A database connection.
      * @throws SQLException If a database access error occurs.
      */
-    public Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
         if (dataSource == null) {
             throw new IllegalStateException("DatabaseManager is not initialized.");
         }
@@ -58,18 +70,13 @@ public class DatabaseManager {
     }
 
     /**
-     * Returns the single instance of DatabaseManager.
-     *
-     * @return The single instance of DatabaseManager.
+     * Closes the data source.
      */
-    public static DatabaseManager getInstance() {
-        return InstanceHolder.instance;
-    }
+    public static void close() {
+        if (dataSource == null) {
+            throw new IllegalStateException("DatabaseManager is not initialized.");
+        }
 
-    /**
-     * InstanceHolder - Private static nested class that holds the single instance of DatabaseManager.
-     */
-    private static final class InstanceHolder {
-        private static final DatabaseManager instance = new DatabaseManager();
+        dataSource.close();
     }
 }

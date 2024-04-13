@@ -1,12 +1,17 @@
 package gg.enes.moderation.core.database;
 
+import gg.enes.moderation.core.database.config.DatabaseType;
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
 import gg.enes.moderation.core.utils.DatabaseUtil;
+import gg.enes.moderation.core.utils.EnvironmentUtil;
 
 import java.lang.reflect.Field;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public abstract class TableCreator {
@@ -66,7 +71,7 @@ public abstract class TableCreator {
                             createStatementBuilder.append(defaultValue);
                         } catch (NumberFormatException ignored) {
                             createStatementBuilder
-                                    .append(" '")
+                                    .append("'")
                                     .append(defaultValue)
                                     .append("'");
                         }
@@ -83,12 +88,25 @@ public abstract class TableCreator {
         }
         createStatementBuilder.append(");");
 
-        Connection connection = DatabaseManager.getInstance().getConnection();
+        String query = createStatementBuilder.toString();
 
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(createStatementBuilder.toString());
-        } finally {
-            DatabaseUtil.closeQuietly(connection);
+        if (DatabaseManager.getDatabaseType() == DatabaseType.Sqlite) {
+            query = query
+                    .replace("AUTO_INCREMENT", "AUTOINCREMENT")
+                    .replace("INT", "INTEGER")
+                    .replace("BIGINT", "INTEGER")
+                    .replace("VARCHAR(255)", "TEXT")
+                    .replace("TIMESTAMP", "DATETIME");
+        }
+
+        if (EnvironmentUtil.isTestEnvironment()) {
+            Connection connection = DatabaseManager.getConnection();
+
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(query);
+            } finally {
+                DatabaseUtil.closeQuietly(connection);
+            }
         }
 
         return createStatementBuilder.toString();

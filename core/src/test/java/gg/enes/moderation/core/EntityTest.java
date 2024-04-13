@@ -13,7 +13,7 @@ public class EntityTest {
         Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
 
         for (Class<?> entity : entityRegistry) {
-            Field[] fields = entity.getFields();
+            Field[] fields = entity.getDeclaredFields();
 
             for (Field field : fields) {
                 System.out.println(Arrays.toString(field.getAnnotations()));
