@@ -165,7 +165,7 @@ fabric.properties
 # Ignore everything but code style settings and run configurations
 # that are supposed to be shared within teams.
 
-.idea/*
+.idea
 
 !.idea/codeStyles
 !.idea/runConfigurations
@@ -281,5 +281,4 @@ gradle-app.setting
 *.hprof
 
 ### Local Development Server ###
-/server
-/server/spigot-1.19.4.jar
+internal

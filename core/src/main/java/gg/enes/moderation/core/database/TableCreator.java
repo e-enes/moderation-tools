@@ -90,7 +90,7 @@ public abstract class TableCreator {
 
         String query = createStatementBuilder.toString();
 
-        if (DatabaseManager.getDatabaseType() == DatabaseType.Sqlite) {
+        if (DatabaseManager.getDatabaseType() == DatabaseType.SQLITE) {
             query = query
                     .replace("AUTO_INCREMENT", "AUTOINCREMENT")
                     .replace("INT", "INTEGER")

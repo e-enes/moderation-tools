@@ -1,9 +1,9 @@
 package gg.enes.moderation.core.caching;
 
-public interface CacheManager {
-    <K, V> void set(K key, V value);
+public interface CacheManager<K, V> {
+    void set(K key, V value);
 
-    <K, V> V get(K key, Class<V> type);
+    V get(K key);
 
-    <K> void del(K key);
+    void del(K key);
 }

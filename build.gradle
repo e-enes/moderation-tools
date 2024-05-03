@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'checkstyle'
 }
 
 compileJava {
@@ -12,13 +13,13 @@ jar {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'checkstyle'
 
     repositories {
         mavenCentral()
     }
 
-    group 'gg.enes.moderation'
-    version '2.0-SNAPSHOT'
+    group 'gg.enes.moderation.' + project.getName()
 
     java {
         toolchain {
@@ -27,10 +28,15 @@ subprojects {
     }
 
     jar {
-        archiveBaseName = "ModerationTools"
+        archiveBaseName = project.getName() + '.ModerationTools'
     }
 
-    compileJava {
-        options.encoding = "UTF-8"
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    checkstyle {
+        toolVersion = '10.16.0'
+        ignoreFailures = false
     }
 }

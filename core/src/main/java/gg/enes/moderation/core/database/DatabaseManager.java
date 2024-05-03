@@ -25,11 +25,11 @@ public class DatabaseManager {
 
             dbType = config.getDbType();
 
-            if (dbType == DatabaseType.Sqlite) {
+            if (dbType == DatabaseType.SQLITE) {
                 hikariConfig.setDriverClassName("org.sqlite.JDBC");
                 hikariConfig.setJdbcUrl("jdbc:sqlite:" + config.getFileName());
                 hikariConfig.setMaximumPoolSize(10);
-            } else if (dbType == DatabaseType.Mysql) {
+            } else if (dbType == DatabaseType.MYSQL) {
                 hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
                 hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%d/%s", config.getHost(), config.getPort(), config.getDatabaseName()));
                 hikariConfig.setUsername(config.getUsername());
