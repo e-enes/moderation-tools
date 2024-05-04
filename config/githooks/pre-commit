@@ -1,0 +1,8 @@
+#!/bin/sh
+
+./gradlew checkstyleMain
+
+if [ $? -ne 0 ]; then
+ echo "Checkstyle failed, please fix the errors before committing."
+ exit 1
+fi

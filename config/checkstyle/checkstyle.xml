@@ -56,10 +56,6 @@
         <property name="optional" value="true"/>
     </module>
 
-    <!-- Checks whether files end with a new line.                        -->
-    <!-- See https://checkstyle.org/checks/misc/newlineatendoffile.html -->
-    <module name="NewlineAtEndOfFile"/>
-
     <!-- Checks that property files contain the same keys.         -->
     <!-- See https://checkstyle.org/checks/misc/translation.html -->
     <module name="Translation"/>
@@ -68,6 +64,7 @@
     <!-- See https://checkstyle.org/checks/sizes/index.html -->
     <module name="FileLength"/>
     <module name="LineLength">
+        <property name="max" value="160"/>
         <property name="fileExtensions" value="java"/>
     </module>
 
@@ -116,6 +113,11 @@
 
         <!-- Checks for imports                              -->
         <!-- See https://checkstyle.org/checks/imports/index.html -->
+        <module name="ImportOrder">
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="groups" value="*,/^java\./"/>
+        </module>
         <module name="AvoidStarImport"/>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>

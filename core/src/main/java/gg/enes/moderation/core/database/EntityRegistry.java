@@ -5,8 +5,14 @@ import org.reflections.Reflections;
 
 import java.util.Set;
 
-public class EntityRegistry {
+public final class EntityRegistry {
+    /**
+     * The package where entity classes are located.
+     */
     private static final String ENTITY_PACKAGE = "gg.enes.moderation.core.entity";
+
+    private EntityRegistry() {
+    }
 
     /**
      * Uses Reflections to find all entity classes annotated with @Table within the entity package.

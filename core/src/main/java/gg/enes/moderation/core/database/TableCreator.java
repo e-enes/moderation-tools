@@ -14,14 +14,18 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public abstract class TableCreator {
+public final class TableCreator {
+    private TableCreator() {
+    }
+
     /**
-     * Initializes the database table based on the annotated entity class.
+     * Initializes a table in the database based on the provided entity class.
      *
-     * @param entityClass The class of the entity to create a table for.
-     * @throws SQLException If a database access error occurs.
+     * @param entityClass The entity class to initialize a table for.
+     * @return The SQL query used to create the table.
+     * @throws SQLException If an error occurs while creating the table.
      */
-    public static String initialize(Class<?> entityClass) throws SQLException {
+    public static String initialize(final Class<?> entityClass) throws SQLException {
         if (!entityClass.isAnnotationPresent(Table.class)) {
             throw new IllegalArgumentException("No @Table annotation present on class: " + entityClass.getName());
         }
@@ -118,7 +122,7 @@ public abstract class TableCreator {
      * @param field The field to convert.
      * @return The SQL type as a String.
      */
-    private static String convertType(Field field) {
+    private static String convertType(final Field field) {
         Class<?> type = field.getType();
 
         if (type == int.class || type == Integer.class) {

@@ -1,6 +1,9 @@
 package gg.enes.moderation.core.utils;
 
-public class EnvironmentUtil {
+public final class EnvironmentUtil {
+    private EnvironmentUtil() {
+    }
+
     /**
      * Checks if the current environment is a test environment.
      *
@@ -10,7 +13,8 @@ public class EnvironmentUtil {
         try {
             Class.forName("org.junit.Test");
             return true;
-        } catch (ClassNotFoundException ignored) {}
+        } catch (ClassNotFoundException ignored) {
+        }
 
         return false;
     }

@@ -6,15 +6,28 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.concurrent.TimeUnit;
 
 public class CaffeineCacheManager<K, V> implements CacheManager<K, V> {
+    /**
+     * The maximum number of entries that can be stored in the cache.
+     */
+    private static final int MAXIMUM_SIZE = 10_000;
+
+    /**
+     * The duration in minutes that an entry can be stored in the cache.
+     */
+    private static final int DURATION = 60;
+
+    /**
+     * The Caffeine cache instance.
+     */
     private final Cache<K, V> cache;
 
     /**
-     * Constructs a CaffeineCacheManager with predefined maximum size and expiry policy.
+     * Constructs a new Caffeine cache manager with default settings.
      */
     public CaffeineCacheManager() {
         this.cache = Caffeine.newBuilder()
-                .maximumSize(10_000)
-                .expireAfterWrite(60, TimeUnit.MINUTES)
+                .maximumSize(MAXIMUM_SIZE)
+                .expireAfterWrite(DURATION, TimeUnit.MINUTES)
                 .build();
     }
 
@@ -25,7 +38,7 @@ public class CaffeineCacheManager<K, V> implements CacheManager<K, V> {
      * @param value The value to be associated with the key.
      */
     @Override
-    public void set(K key, V value) {
+    public void set(final K key, final V value) {
         this.cache.put(key, value);
     }
 
@@ -36,7 +49,7 @@ public class CaffeineCacheManager<K, V> implements CacheManager<K, V> {
      * @return The value associated with the key or null if not found.
      */
     @Override
-    public V get(K key) {
+    public V get(final K key) {
         return this.cache.getIfPresent(key);
     }
 
@@ -46,7 +59,7 @@ public class CaffeineCacheManager<K, V> implements CacheManager<K, V> {
      * @param key The key whose entry is to be removed.
      */
     @Override
-    public void del(K key) {
+    public void del(final K key) {
         this.cache.invalidate(key);
     }
 }

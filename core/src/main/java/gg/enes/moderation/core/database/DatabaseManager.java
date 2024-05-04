@@ -4,22 +4,31 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
 import gg.enes.moderation.core.database.config.DatabaseType;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DatabaseManager {
+public final class DatabaseManager {
+    /**
+     * The HikariCP data source instance.
+     */
     private static HikariDataSource dataSource;
-    private static DatabaseType dbType;
-
-    private DatabaseManager() {}
 
     /**
-     * Initializes a single instance of the data source if it hasn't been initialized already.
-     *
-     * @param config The database configuration settings to be used by the HikariCP data source.
+     * The type of the database currently configured.
      */
-    public static synchronized void initialize(DatabaseConfig config) {
+    private static DatabaseType dbType;
+
+    private DatabaseManager() {
+    }
+
+    /**
+     * Initializes the database connection pool with the provided configuration.
+     *
+     * @param config The database configuration.
+     */
+    public static synchronized void initialize(@NonNull final DatabaseConfig config) {
         if (dataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
 
@@ -28,7 +37,6 @@ public class DatabaseManager {
             if (dbType == DatabaseType.SQLITE) {
                 hikariConfig.setDriverClassName("org.sqlite.JDBC");
                 hikariConfig.setJdbcUrl("jdbc:sqlite:" + config.getFileName());
-                hikariConfig.setMaximumPoolSize(10);
             } else if (dbType == DatabaseType.MYSQL) {
                 hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
                 hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%d/%s", config.getHost(), config.getPort(), config.getDatabaseName()));
@@ -37,7 +45,6 @@ public class DatabaseManager {
                 hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
                 hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
                 hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-                hikariConfig.setMaximumPoolSize(20);
             } else {
                 throw new IllegalArgumentException("Unsupported database type: " + config.getDbType());
             }

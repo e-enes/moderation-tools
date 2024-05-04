@@ -11,6 +11,12 @@ jar {
     enabled = false
 }
 
+tasks.register('installGitHooks', Copy) {
+    from "${rootProject.projectDir}/config/githooks"
+    into "${rootProject.rootDir}/.git/hooks"
+    fileMode 0755
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
@@ -33,6 +39,7 @@ subprojects {
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
+        dependsOn ':installGitHooks'
     }
 
     checkstyle {
