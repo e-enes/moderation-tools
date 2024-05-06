@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.Set;
 
 public class EntityTest {
+    /**
+     * Tests the entity registry.
+     */
     @Test
     public void testRegistry() {
         Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
@@ -16,7 +19,7 @@ public class EntityTest {
             Field[] fields = entity.getDeclaredFields();
 
             for (Field field : fields) {
-                System.out.println(Arrays.toString(field.getAnnotations()));
+                ModerationLogger.debug(Arrays.toString(field.getAnnotations()));
             }
         }
     }

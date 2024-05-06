@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public final class TableCreator {
@@ -127,13 +128,13 @@ public final class TableCreator {
 
         if (type == int.class || type == Integer.class) {
             return "INT";
-        } else if (type == long.class || type == Long.class) {
+        } else if (type == Long.class) {
             return "BIGINT";
         } else if (type == String.class || type == UUID.class) {
             return "VARCHAR(255)";
-        } else if (type == boolean.class || type == Boolean.class) {
+        } else if (type == Boolean.class) {
             return "BOOLEAN";
-        } else if (type == Timestamp.class) {
+        } else if (type == Timestamp.class || type == LocalDateTime.class) {
             return "TIMESTAMP";
         }
 

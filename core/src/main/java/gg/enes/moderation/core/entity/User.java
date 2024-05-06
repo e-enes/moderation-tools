@@ -2,13 +2,15 @@ package gg.enes.moderation.core.entity;
 
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
+import gg.enes.moderation.core.entity.annotations.OneToMany;
 import gg.enes.moderation.core.entity.annotations.Table;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Table(name = "users")
-public class User extends BaseEntity {
+@Table(name = "mt_users")
+public class User {
     /**
      * The ID of the user.
      */
@@ -47,23 +49,28 @@ public class User extends BaseEntity {
     private Boolean banned;
 
     /**
-     * The last login of the user.
-     */
-    @Column(name = "last_login", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private Timestamp lastLogin;
-
-    /**
      * The time the user joined.
      */
-    @Column(name = "joined_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private Timestamp joinedAt;
+    @Column(name = "created_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
 
     /**
-     * Creates a new user.
+     * The connections of the user.
      */
-    public User() {
-        super();
-    }
+    @OneToMany
+    private List<Connection> connections;
+
+    /**
+     * The sanctions applied to the user.
+     */
+    @OneToMany
+    private List<Sanction> sanctions;
+
+    /**
+     * The reports made by the user.
+     */
+    @OneToMany
+    private List<Report> reports;
 
     /**
      * Sets the ID of the user.
@@ -186,33 +193,13 @@ public class User extends BaseEntity {
     }
 
     /**
-     * Sets the last login of the user.
-     *
-     * @param newLastLogin The last login of the user.
-     * @return The current User instance.
-     */
-    public User setLastLogin(final Timestamp newLastLogin) {
-        this.lastLogin = newLastLogin;
-        return this;
-    }
-
-    /**
-     * Retrieves the last login of the user.
-     *
-     * @return The last login of the user.
-     */
-    public Timestamp getLastLogin() {
-        return this.lastLogin;
-    }
-
-    /**
      * Sets the time the user joined.
      *
-     * @param newJoinedAt The time the user joined.
+     * @param newCreatedAt The time the user joined.
      * @return The current User instance.
      */
-    public User setJoinedAt(final Timestamp newJoinedAt) {
-        this.joinedAt = newJoinedAt;
+    public User setCreatedAt(final LocalDateTime newCreatedAt) {
+        this.createdAt = newCreatedAt;
         return this;
     }
 
@@ -221,7 +208,67 @@ public class User extends BaseEntity {
      *
      * @return The time the user joined.
      */
-    public Timestamp getJoinedAt() {
-        return this.joinedAt;
+    public LocalDateTime getJoinedAt() {
+        return this.createdAt;
+    }
+
+    /**
+     * Sets the connections of the user.
+     *
+     * @param newConnections The connections of the user.
+     * @return The current User instance.
+     */
+    public User setConnections(final List<Connection> newConnections) {
+        this.connections = newConnections;
+        return this;
+    }
+
+    /**
+     * Retrieves the connections of the user.
+     *
+     * @return The connections of the user.
+     */
+    public List<Connection> getConnections() {
+        return this.connections;
+    }
+
+    /**
+     * Sets the sanctions applied to the user.
+     *
+     * @param newSanctions The sanctions applied to the user.
+     * @return The current User instance.
+     */
+    public User setSanctions(final List<Sanction> newSanctions) {
+        this.sanctions = newSanctions;
+        return this;
+    }
+
+    /**
+     * Retrieves the sanctions applied to the user.
+     *
+     * @return The sanctions applied to the user.
+     */
+    public List<Sanction> getSanctions() {
+        return this.sanctions;
+    }
+
+    /**
+     * Sets the reports made by the user.
+     *
+     * @param newReports The reports made by the user.
+     * @return The current User instance.
+     */
+    public User setReports(final List<Report> newReports) {
+        this.reports = newReports;
+        return this;
+    }
+
+    /**
+     * Retrieves the reports made by the user.
+     *
+     * @return The reports made by the user.
+     */
+    public List<Report> getReports() {
+        return this.reports;
     }
 }
