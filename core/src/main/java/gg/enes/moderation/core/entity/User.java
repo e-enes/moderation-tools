@@ -2,6 +2,7 @@ package gg.enes.moderation.core.entity;
 
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
+import gg.enes.moderation.core.entity.annotations.Index;
 import gg.enes.moderation.core.entity.annotations.OneToMany;
 import gg.enes.moderation.core.entity.annotations.Table;
 
@@ -21,6 +22,7 @@ public class User {
     /**
      * The UUID of the user.
      */
+    @Index()
     @Column(name = "uuid", nullable = false)
     private UUID uuid;
 
@@ -57,19 +59,19 @@ public class User {
     /**
      * The connections of the user.
      */
-    @OneToMany
+    @OneToMany()
     private List<Connection> connections;
 
     /**
      * The sanctions applied to the user.
      */
-    @OneToMany
+    @OneToMany()
     private List<Sanction> sanctions;
 
     /**
      * The reports made by the user.
      */
-    @OneToMany
+    @OneToMany()
     private List<Report> reports;
 
     /**

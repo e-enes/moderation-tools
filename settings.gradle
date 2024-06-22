@@ -1,3 +1,3 @@
 rootProject.name = 'moderation-tools'
 
-include 'bungeecord', 'core', 'paper', 'spigot', 'velocity', 'sponge'
+include 'bungeecord', 'core', 'bukkit', 'velocity', 'sponge'
