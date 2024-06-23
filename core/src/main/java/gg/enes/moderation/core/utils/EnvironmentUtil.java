@@ -18,4 +18,13 @@ public final class EnvironmentUtil {
 
         return false;
     }
+
+    /**
+     * Checks if the current environment is a development environment.
+     *
+     * @return true if the current environment is a development environment, false otherwise.
+     */
+    public static boolean isDevelopmentEnvironment() {
+        return System.getProperty("development") != null;
+    }
 }

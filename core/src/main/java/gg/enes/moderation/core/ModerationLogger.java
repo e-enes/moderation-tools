@@ -1,5 +1,6 @@
 package gg.enes.moderation.core;
 
+import gg.enes.moderation.core.utils.EnvironmentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,9 @@ public final class ModerationLogger {
      * @param message The message to log.
      */
     public static void debug(final String message) {
-        LOGGER.debug(message);
+        if (EnvironmentUtil.isDevelopmentEnvironment()) {
+            LOGGER.debug(message);
+        }
     }
 
     /**

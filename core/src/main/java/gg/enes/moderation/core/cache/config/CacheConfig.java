@@ -1,153 +1,74 @@
 package gg.enes.moderation.core.cache.config;
 
-public class CacheConfig {
+public final class CacheConfig {
     /**
-     * The type of cache to use.
+     * The maximum size of the cache.
      */
-    private CacheType cacheType;
+    private int maximumSize = 10_000;
 
     /**
-     * The host of the Redis cache.
+     * The time to live of the cache.
      */
-    private String redisHost;
+    private long timeToLive = 60;
 
     /**
-     * The port of the Redis cache.
+     * The singleton instance of the CacheConfig.
      */
-    private int redisPort;
+    private static CacheConfig instance;
+
+    private CacheConfig() {
+    }
 
     /**
-     * The timeout for Redis connections.
-     */
-    private int redisTimeout;
-
-    /**
-     * The maximum size of the Caffeine cache.
-     */
-    private long caffeineMaxSize;
-
-    /**
-     * The expiration time for entries in the Caffeine cache.
-     */
-    private long caffeineExpireAfterWrite;
-
-    /**
-     * Sets the type of cache to use.
+     * Retrieves the singleton instance of the CacheConfig.
      *
-     * @param newCacheType The cache type as a CacheType enum.
+     * @return The singleton instance of the CacheConfig.
+     */
+    public static CacheConfig build() {
+        if (instance == null) {
+            instance = new CacheConfig();
+        }
+
+        return instance;
+    }
+
+    /**
+     * Sets the maximum size of the cache.
+     *
+     * @param newMaximumSize The maximum size of the cache.
      * @return The current CacheConfig instance.
      */
-    public CacheConfig setCacheType(final CacheType newCacheType) {
-        this.cacheType = newCacheType;
+    public CacheConfig setMaximumSize(final int newMaximumSize) {
+        this.maximumSize = newMaximumSize;
         return this;
     }
 
     /**
-     * Retrieves the type of cache to use.
+     * Retrieves the maximum size of the cache.
      *
-     * @return The cache type as a CacheType enum.
+     * @return The maximum size of the cache.
      */
-    public CacheType getCacheType() {
-        return this.cacheType;
+    public int getMaximumSize() {
+        return this.maximumSize;
     }
 
     /**
-     * Sets the host of the Redis cache.
+     * Sets the time to live of the cache.
      *
-     * @param newRedisHost The host of the Redis cache.
+     * @param newTimeToLive The time to live of the cache.
      * @return The current CacheConfig instance.
      */
-    public CacheConfig setRedisHost(final String newRedisHost) {
-        this.redisHost = newRedisHost;
+    public CacheConfig setTimeToLive(final long newTimeToLive) {
+        this.timeToLive = newTimeToLive;
         return this;
     }
 
     /**
-     * Retrieves the host of the Redis cache.
+     * Retrieves the time to live of the cache.
      *
-     * @return The host of the Redis cache.
+     * @return The time to live of the cache.
      */
-    public String getRedisHost() {
-        return this.redisHost;
-    }
-
-    /**
-     * Sets the port of the Redis cache.
-     *
-     * @param newRedisPort The port of the Redis cache.
-     * @return The current CacheConfig instance.
-     */
-    public CacheConfig setRedisPort(final int newRedisPort) {
-        this.redisPort = newRedisPort;
-        return this;
-    }
-
-    /**
-     * Retrieves the port of the Redis cache.
-     *
-     * @return The port of the Redis cache.
-     */
-    public int getRedisPort() {
-        return this.redisPort;
-    }
-
-    /**
-     * Sets the timeout for Redis connections.
-     *
-     * @param newRedisTimeout The timeout for Redis connections.
-     * @return The current CacheConfig instance.
-     */
-    public CacheConfig setRedisTimeout(final int newRedisTimeout) {
-        this.redisTimeout = newRedisTimeout;
-        return this;
-    }
-
-    /**
-     * Retrieves the timeout for Redis connections.
-     *
-     * @return The timeout for Redis connections.
-     */
-    public int getRedisTimeout() {
-        return this.redisTimeout;
-    }
-
-    /**
-     * Sets the maximum size of the Caffeine cache.
-     *
-     * @param newCaffeineMaxSize The maximum size of the Caffeine cache.
-     * @return The current CacheConfig instance.
-     */
-    public CacheConfig setCaffeineMaxSize(final long newCaffeineMaxSize) {
-        this.caffeineMaxSize = newCaffeineMaxSize;
-        return this;
-    }
-
-    /**
-     * Retrieves the maximum size of the Caffeine cache.
-     *
-     * @return The maximum size of the Caffeine cache.
-     */
-    public long getCaffeineMaxSize() {
-        return this.caffeineMaxSize;
-    }
-
-    /**
-     * Sets the expiration time for entries in the Caffeine cache.
-     *
-     * @param newCaffeineExpireAfterWrite The expiration time for entries in the Caffeine cache.
-     * @return The current CacheConfig instance.
-     */
-    public CacheConfig setCaffeineExpireAfterWrite(final long newCaffeineExpireAfterWrite) {
-        this.caffeineExpireAfterWrite = newCaffeineExpireAfterWrite;
-        return this;
-    }
-
-    /**
-     * Retrieves the expiration time for entries in the Caffeine cache.
-     *
-     * @return The expiration time for entries in the Caffeine cache.
-     */
-    public long getCaffeineExpireAfterWrite() {
-        return this.caffeineExpireAfterWrite;
+    public long getTimeToLive() {
+        return this.timeToLive;
     }
 }

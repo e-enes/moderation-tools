@@ -1,6 +1,8 @@
 package gg.enes.moderation.core.repository;
 
-public interface BaseRepository<T, ID> {
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public interface BaseRepository<ID, T> {
     /**
      * Creates a new entity in the repository.
      *
@@ -12,9 +14,10 @@ public interface BaseRepository<T, ID> {
      * Retrieves an entity from the repository by its ID.
      *
      * @param id The ID of the entity to be retrieved.
+     * @param force Whether to force a read from the database.
      * @return The entity associated with the ID or null if not found.
      */
-    T read(ID id);
+    T read(@Nullable ID id, @Nullable Boolean force);
 
     /**
      * Updates an entity in the repository.
@@ -28,5 +31,5 @@ public interface BaseRepository<T, ID> {
      *
      * @param id The ID of the entity to be deleted.
      */
-    void delete(ID id);
+    void delete(@Nullable ID id);
 }
