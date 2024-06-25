@@ -13,6 +13,8 @@ public class DatabaseTest {
      */
     @Test
     public void testTable() throws SQLException {
+        System.setProperty("development", "true");
+
         Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
 
         for (Class<?> entity : entityRegistry) {

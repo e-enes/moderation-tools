@@ -12,7 +12,7 @@ public final class ModerationLogger {
     /**
      * The logger instance.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModerationLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("ModerationCore");
 
     /**
      * Logs a debug message.

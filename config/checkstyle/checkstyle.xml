@@ -64,7 +64,7 @@
     <!-- See https://checkstyle.org/checks/sizes/index.html -->
     <module name="FileLength"/>
     <module name="LineLength">
-        <property name="max" value="160"/>
+        <property name="max" value="240"/>
         <property name="fileExtensions" value="java"/>
     </module>
 

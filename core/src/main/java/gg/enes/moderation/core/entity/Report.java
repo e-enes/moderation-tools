@@ -5,7 +5,6 @@ import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Table(name = "mt_reports")
 public class Report {
@@ -166,7 +165,7 @@ public class Report {
      * @param newReason The reason to set.
      * @return The current Report instance.
      */
-    public Report setReason(String newReason) {
+    public Report setReason(final String newReason) {
         this.reason = newReason;
         return this;
     }

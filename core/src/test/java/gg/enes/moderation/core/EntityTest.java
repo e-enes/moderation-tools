@@ -13,6 +13,8 @@ public class EntityTest {
      */
     @Test
     public void testRegistry() {
+        System.setProperty("development", "true");
+
         Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
 
         for (Class<?> entity : entityRegistry) {
