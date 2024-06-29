@@ -1,0 +1,29 @@
+plugins {
+    id "java-library"
+}
+
+version '2.0-SNAPSHOT'
+
+repositories {
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    api project(':core')
+    compileOnly 'org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT'
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand project.properties
+    }
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(project(":core").sourceSets.main.output)
+    from(configurations.compileClasspath.filter { it.name.endsWith('jar') }.collect { zipTree(it) })
+}

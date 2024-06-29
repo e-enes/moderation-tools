@@ -1,0 +1,3 @@
+# Publish to GitHub Package Registry, normally useless for most users
+gpr.user=your_github_username
+gpr.key=your_github_token

@@ -1,0 +1,7 @@
+name: ModerationTools
+version: '${version}'
+main: gg.enes.moderation.bukkit.ModerationTools
+api-version: '1.20'
+description: Moderation tools for Minecraft servers.
+author: Enes Tahiri <125091714+e-enes@users.noreply.github.com>
+website: https://github.com/e-enes/moderation-tools

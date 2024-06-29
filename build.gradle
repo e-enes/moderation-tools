@@ -1,28 +1,49 @@
 plugins {
     id 'java'
+    id 'checkstyle'
 }
 
-group 'gg.enes.moderation'
-version '1.2-SNAPSHOP'
+compileJava {
+    enabled = false
+}
 
-repositories {
-    mavenCentral()
+jar {
+    enabled = false
+}
 
-    maven {
-        name = "spigot"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+tasks.register('installGitHooks', Copy) {
+    from "${rootProject.projectDir}/config/githooks"
+    into "${rootProject.rootDir}/.git/hooks"
+    fileMode 0755
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'checkstyle'
+
+    repositories {
+        mavenCentral()
     }
-}
 
-dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
-    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
-    implementation 'org.json:json:20230618'
+    group 'gg.enes.moderation.' + project.getName()
 
-    if (project.hasProperty('devMode') && devMode.toBoolean()) {
-        compileJava {
-            options.encoding = 'UTF-8'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
         }
-        setLibsDirName('../server/plugins')
+    }
+
+    jar {
+        archiveBaseName = project.getName() + '.ModerationTools'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        dependsOn ':installGitHooks'
+    }
+
+    checkstyle {
+        toolVersion = '10.16.0'
+        ignoreFailures = false
     }
 }

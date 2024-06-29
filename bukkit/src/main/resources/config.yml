@@ -1,0 +1,25 @@
+# Language of the plugin, available languages are: en, de, es, fr, it, nt, pt, ru, vi
+lang: en
+
+# Database type, available database types are: sqlite, mysql
+dbType: sqlite
+
+# Database configuration
+database:
+  # The database host
+  host: localhost
+  # The database port
+  port: 3306
+  # The database name
+  name: moderation_tools
+  # The database username
+  username: root
+  # The database password
+  password: 'password'
+
+# Cache configuration
+cache:
+  # The maximum size of the cache in megabytes
+  maxSize: 512
+  # The maximum time in seconds that an entry can be in the cache in minutes
+  maxTime: 60
