@@ -4,7 +4,7 @@ public final class CacheConfig {
     /**
      * The maximum size of the cache.
      */
-    private int maximumSize = 10_000;
+    private int maximumSize = 512;
 
     /**
      * The time to live of the cache.

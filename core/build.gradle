@@ -1,5 +1,5 @@
-jar {
-    enabled = false
+plugins {
+    id 'maven-publish'
 }
 
 dependencies {
@@ -19,4 +19,56 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+}
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set('sources')
+}
+
+tasks.register('javadocJar', Jar) {
+    from tasks.javadoc
+    archiveClassifier.set('javadoc')
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://maven.pkg.github.com/e-enes/moderation-tools")
+
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+
+    publications {
+        gpr(MavenPublication) {
+            groupId = 'gg.enes.moderation'
+            artifactId = 'moderation-core'
+            version = '1.0.0'
+
+            from components.java
+
+            artifact tasks.named('sourcesJar')
+            artifact tasks.named('javadocJar')
+
+            pom {
+                name = "ModerationTools Core"
+                description = "Core module for ModerationTools"
+                url = "https://github.com/e-enes/moderation-tools/tree/main/core"
+
+                scm {
+                    connection = 'scm:git:git://github.com/e-enes/moderation-tools.git'
+                    developerConnection = 'scm:git:ssh://github.com/e-enes/moderation-tools.git'
+                    url = 'https://github.com/e-enes/moderation-tools'
+                }
+            }
+        }
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

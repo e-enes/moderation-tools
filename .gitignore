@@ -257,6 +257,7 @@ replay_pid*
 .gradle
 **/build/
 !src/**/build/
+gradle.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -281,4 +282,4 @@ gradle-app.setting
 *.hprof
 
 ### Local Development Server ###
-internal
+bukkit/internal
