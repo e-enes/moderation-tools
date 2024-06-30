@@ -2,11 +2,14 @@ package gg.enes.moderation.bukkit;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import gg.enes.moderation.bukkit.commands.player.ReportCommand;
+import gg.enes.moderation.bukkit.events.GUIListener;
 import gg.enes.moderation.core.cache.config.CacheConfig;
 import gg.enes.moderation.core.database.DatabaseManager;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
 import gg.enes.moderation.core.database.config.DatabaseType;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -147,10 +150,14 @@ public final class ModerationTools extends JavaPlugin {
     }
 
     private void loadListeners() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
         // Register listeners
+        pluginManager.registerEvents(new GUIListener(), this);
     }
 
     private void loadCommands() {
         // Register commands
+        getCommand("report").setExecutor(new ReportCommand());
     }
 }
