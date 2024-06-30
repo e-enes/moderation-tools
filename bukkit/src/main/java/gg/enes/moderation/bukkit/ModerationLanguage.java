@@ -1,10 +1,13 @@
 package gg.enes.moderation.bukkit;
 
+import org.bukkit.ChatColor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,6 +68,24 @@ public final class ModerationLanguage {
      */
     public static String getMessage(final String key, final Object... args) {
         String template = MESSAGES.getOrDefault(key, key);
-        return MessageFormat.format(template, args);
+        return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(template, args));
+    }
+
+    /**
+     * Retrieves the messages for the given key.
+     *
+     * @param key The key of the message.
+     * @param args The arguments to format the message.
+     * @return The formatted messages.
+     */
+    public static ArrayList<String> getMessages(final String key, final Object... args) {
+        String template = MESSAGES.getOrDefault(key, key);
+        ArrayList<String> messages = new ArrayList<>();
+
+        for (String message : template.split(";")) {
+            messages.add(ChatColor.translateAlternateColorCodes('&', MessageFormat.format(message, args)));
+        }
+
+        return messages;
     }
 }

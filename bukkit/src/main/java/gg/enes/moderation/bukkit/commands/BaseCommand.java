@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-public abstract class MTCommand implements CommandExecutor {
+public abstract class BaseCommand implements CommandExecutor {
     /**
      * The plugin command.
      */
@@ -21,7 +21,7 @@ public abstract class MTCommand implements CommandExecutor {
      *
      * @param name The name of the command.
      */
-    public MTCommand(final String name) {
+    public BaseCommand(final String name) {
         this.pluginCommand = ModerationTools.getInstance().getCommand(name);
 
         if (this.pluginCommand == null) {
@@ -32,12 +32,12 @@ public abstract class MTCommand implements CommandExecutor {
     @Override
     public final boolean onCommand(final CommandSender sender, final @NonNull Command command, final @NonNull String label, final String[] args) {
         if (isPlayerOnly() && !(sender instanceof Player)) {
-            sender.sendMessage(ModerationLanguage.getMessage("player_only"));
+            sender.sendMessage(ModerationLanguage.getMessage("message.player_only"));
             return true;
         }
 
         if (getPermission() != null && !sender.hasPermission(getPermission())) {
-            sender.sendMessage(ModerationLanguage.getMessage("no_permission"));
+            sender.sendMessage(ModerationLanguage.getMessage("message.no_permission"));
             return true;
         }
 

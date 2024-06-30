@@ -12,3 +12,7 @@ libraries:
   - com.github.ben-manes.caffeine:caffeine:3.1.8
   - org.slf4j:slf4j-api:2.0.13
   - ch.qos.logback:logback-classic:1.5.6
+commands:
+  report:
+    description: Report a player.
+    usage: /report <player>

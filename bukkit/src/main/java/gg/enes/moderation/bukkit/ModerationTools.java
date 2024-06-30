@@ -2,8 +2,7 @@ package gg.enes.moderation.bukkit;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import gg.enes.moderation.bukkit.commands.player.ReportCommand;
-import gg.enes.moderation.bukkit.events.GUIListener;
+import gg.enes.moderation.bukkit.commands.ReportCommand;
 import gg.enes.moderation.core.cache.config.CacheConfig;
 import gg.enes.moderation.core.database.DatabaseManager;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
@@ -87,7 +86,7 @@ public final class ModerationTools extends JavaPlugin {
                 String currentVersion = getDescription().getVersion();
 
                 if (!currentVersion.equalsIgnoreCase(latestVersion.replace("v", ""))) {
-                    getLogger().warning("An update is available! Current version: " + currentVersion + ", Latest version: " + latestVersion + ". Update here: " + htmlUrl);
+                    getLogger().warning("An update is available! Current version: v" + currentVersion + ", Latest version: " + latestVersion + ". Update here: " + htmlUrl);
                 }
             } catch (Exception e) {
                 getLogger().severe("Failed to check for updates: " + e.getMessage());
@@ -153,7 +152,6 @@ public final class ModerationTools extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
 
         // Register listeners
-        pluginManager.registerEvents(new GUIListener(), this);
     }
 
     private void loadCommands() {
