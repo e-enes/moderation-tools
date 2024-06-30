@@ -26,7 +26,7 @@ public final class ConnectionRepository implements BaseRepository<Long, Connecti
     private final CacheManager<Long, Connection> cacheManager;
 
     private ConnectionRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.build());
+        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**

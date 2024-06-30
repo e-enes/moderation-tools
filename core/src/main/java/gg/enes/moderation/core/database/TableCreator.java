@@ -47,7 +47,7 @@ public final class TableCreator {
                         .append(column.name())
                         .append(" ")
                         .append(convertType(field))
-                        .append(" AUTO_INCREMENT PRIMARY KEY");
+                        .append(" PRIMARY KEY AUTO_INCREMENT");
 
                 createStatementBuilder.append(", ");
             } else if (field.isAnnotationPresent(Column.class)) {
@@ -97,14 +97,14 @@ public final class TableCreator {
 
         if (DatabaseManager.getDatabaseType() == DatabaseType.SQLITE) {
             query = query
-                    .replace("AUTO_INCREMENT", "AUTOINCREMENT")
-                    .replace("INT", "INTEGER")
-                    .replace("BIGINT", "INTEGER")
-                    .replace("VARCHAR(255)", "TEXT")
-                    .replace("TIMESTAMP", "DATETIME");
+                    .replace(" AUTO_INCREMENT", " AUTOINCREMENT")
+                    .replace(" INT", " INTEGER")
+                    .replace(" BIGINT", " INTEGER")
+                    .replace(" VARCHAR(255)", " TEXT")
+                    .replace(" TIMESTAMP", " DATETIME");
         }
 
-        if (EnvironmentUtil.isTestEnvironment()) {
+        if (!EnvironmentUtil.isTestEnvironment()) {
             Connection connection = DatabaseManager.getConnection();
 
             try (Statement statement = connection.createStatement()) {

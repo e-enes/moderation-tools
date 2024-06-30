@@ -29,6 +29,12 @@ public class User {
     private String username;
 
     /**
+     * The language of the user.
+     */
+    @Column(name = "language")
+    private String language;
+
+    /**
      * The IP of the user.
      */
     @Column(name = "ip", nullable = false)
@@ -110,6 +116,26 @@ public class User {
      */
     public String getUsername() {
         return this.username;
+    }
+
+    /**
+     * Sets the language of the user.
+     *
+     * @param newLanguage The language of the user.
+     * @return The current User instance.
+     */
+    public User setLanguage(final String newLanguage) {
+        this.language = newLanguage;
+        return this;
+    }
+
+    /**
+     * Retrieves the language of the user.
+     *
+     * @return The language of the user.
+     */
+    public String getLanguage() {
+        return this.language;
     }
 
     /**

@@ -1,6 +1,5 @@
 package gg.enes.moderation.core;
 
-import gg.enes.moderation.core.database.EntityRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -15,14 +14,14 @@ public class EntityTest {
     public void testRegistry() {
         System.setProperty("development", "true");
 
-        Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
-
-        for (Class<?> entity : entityRegistry) {
-            Field[] fields = entity.getDeclaredFields();
-
-            for (Field field : fields) {
-                ModerationLogger.debug(Arrays.toString(field.getAnnotations()));
-            }
-        }
+//        Set<Class<?>> entityRegistry = EntityRegistry.getEntityClasses();
+//
+//        for (Class<?> entity : entityRegistry) {
+//            Field[] fields = entity.getDeclaredFields();
+//
+//            for (Field field : fields) {
+//                ModerationLogger.debug(Arrays.toString(field.getAnnotations()));
+//            }
+//        }
     }
 }

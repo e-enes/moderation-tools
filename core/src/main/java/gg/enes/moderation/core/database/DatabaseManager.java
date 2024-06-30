@@ -2,12 +2,20 @@ package gg.enes.moderation.core.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import gg.enes.moderation.core.ModerationLogger;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
 import gg.enes.moderation.core.database.config.DatabaseType;
+import gg.enes.moderation.core.entity.Action;
+import gg.enes.moderation.core.entity.Report;
+import gg.enes.moderation.core.entity.Sanction;
+import gg.enes.moderation.core.entity.User;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public final class DatabaseManager {
     /**
@@ -28,7 +36,7 @@ public final class DatabaseManager {
      *
      * @param config The database configuration.
      */
-    public static synchronized void initialize(@NonNull final DatabaseConfig config) {
+    public static synchronized void initialize(@NonNull final DatabaseConfig config) throws SQLException {
         if (dataSource == null) {
             HikariConfig hikariConfig = new HikariConfig();
 
@@ -50,6 +58,18 @@ public final class DatabaseManager {
             }
 
             dataSource = new HikariDataSource(hikariConfig);
+
+            Set<Class<?>> entityRegistry = new HashSet<>();
+            entityRegistry.add(User.class);
+            entityRegistry.add(Action.class);
+            entityRegistry.add(Report.class);
+            entityRegistry.add(Sanction.class);
+            entityRegistry.add(gg.enes.moderation.core.entity.Connection.class);
+
+            for (Class<?> entity : entityRegistry) {
+                String query = TableCreator.initialize(entity);
+                ModerationLogger.debug(query);
+            }
         }
     }
 

@@ -27,7 +27,7 @@ public final class SanctionRepository implements BaseRepository<Long, Sanction> 
     private final CacheManager<Long, Sanction> cacheManager;
 
     private SanctionRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.build());
+        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**

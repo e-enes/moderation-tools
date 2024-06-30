@@ -1,10 +1,13 @@
 # Language of the plugin, available languages are: en, de, es, fr, it, nt, pt, ru, vi
-lang: en
+language: en
+
+# Allow players to change their language, if set to false the language will be set to the default language
+allowPlayerLanguage: true
 
 # Database type, available database types are: sqlite, mysql
 dbType: sqlite
 
-# Database configuration
+# Database configuration, only used if the database type is set to mysql
 database:
   # The database host
   host: localhost

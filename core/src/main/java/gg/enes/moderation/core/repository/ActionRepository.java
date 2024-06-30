@@ -26,7 +26,7 @@ public final class ActionRepository implements BaseRepository<Long, Action> {
     private final CacheManager<Long, Action> cacheManager;
 
     private ActionRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.build());
+        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**

@@ -27,7 +27,7 @@ public final class ReportRepository implements BaseRepository<Long, Report> {
     private final CacheManager<Long, Report> cacheManager;
 
     private ReportRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.build());
+        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**

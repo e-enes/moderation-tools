@@ -26,7 +26,7 @@ public final class UserRepository implements BaseRepository<Long, User> {
     private final CacheManager<Long, User> cacheManager;
 
     private UserRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.build());
+        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**
