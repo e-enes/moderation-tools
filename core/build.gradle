@@ -43,7 +43,7 @@ publishing {
 
     publications {
         gpr(MavenPublication) {
-            groupId = 'gg.enes.moderation'
+            groupId = 'com.github.e-enes'
             artifactId = 'moderation-core'
             version = '1.0.0'
 
