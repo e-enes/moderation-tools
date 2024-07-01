@@ -10,7 +10,7 @@ import java.util.UUID;
 @Table(name = "mt_users")
 public class User {
     /**
-     * The ID of the user.
+     * The unique identifier for the user.
      */
     @Id()
     @Column(name = "user_id")
@@ -29,40 +29,34 @@ public class User {
     private String username;
 
     /**
-     * The language of the user.
-     */
-    @Column(name = "language")
-    private String language;
-
-    /**
-     * The IP of the user.
+     * The IP address of the user.
      */
     @Column(name = "ip", nullable = false)
     private String ip;
 
     /**
-     * If the user is muted.
+     * Indicates if the user is muted.
      */
     @Column(name = "muted", nullable = false, defaultValue = "false")
-    private Boolean muted;
+    private Boolean muted = false;
 
     /**
-     * If the user is banned.
+     * Indicates if the user is banned.
      */
     @Column(name = "banned", nullable = false, defaultValue = "false")
-    private Boolean banned;
+    private Boolean banned = false;
 
     /**
-     * The time the user joined.
+     * The timestamp when the user was created.
      */
     @Column(name = "created_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     /**
-     * Sets the ID of the user.
+     * Sets the unique identifier for the user.
      *
-     * @param newId The ID of the user.
-     * @return The current User instance.
+     * @param newId The new ID for the user.
+     * @return The current user instance.
      */
     public User setId(final Long newId) {
         this.id = newId;
@@ -70,7 +64,7 @@ public class User {
     }
 
     /**
-     * Retrieves the ID of the user.
+     * Gets the unique identifier for the user.
      *
      * @return The ID of the user.
      */
@@ -79,10 +73,10 @@ public class User {
     }
 
     /**
-     * Sets the UUID of the user.
+     * Sets the UUID for the user.
      *
-     * @param newUuid The UUID of the user.
-     * @return The current User instance.
+     * @param newUuid The new UUID for the user.
+     * @return The current user instance.
      */
     public User setUuid(final UUID newUuid) {
         this.uuid = newUuid;
@@ -90,7 +84,7 @@ public class User {
     }
 
     /**
-     * Retrieves the UUID of the user.
+     * Gets the UUID for the user.
      *
      * @return The UUID of the user.
      */
@@ -99,10 +93,10 @@ public class User {
     }
 
     /**
-     * Sets the username of the user.
+     * Sets the username for the user.
      *
-     * @param newUsername The username of the user.
-     * @return The current User instance.
+     * @param newUsername The new username for the user.
+     * @return The current user instance.
      */
     public User setUsername(final String newUsername) {
         this.username = newUsername;
@@ -110,7 +104,7 @@ public class User {
     }
 
     /**
-     * Retrieves the username of the user.
+     * Gets the username for the user.
      *
      * @return The username of the user.
      */
@@ -119,30 +113,10 @@ public class User {
     }
 
     /**
-     * Sets the language of the user.
+     * Sets the IP address for the user.
      *
-     * @param newLanguage The language of the user.
-     * @return The current User instance.
-     */
-    public User setLanguage(final String newLanguage) {
-        this.language = newLanguage;
-        return this;
-    }
-
-    /**
-     * Retrieves the language of the user.
-     *
-     * @return The language of the user.
-     */
-    public String getLanguage() {
-        return this.language;
-    }
-
-    /**
-     * Sets the IP of the user.
-     *
-     * @param newIp The IP of the user.
-     * @return The current User instance.
+     * @param newIp The new IP address for the user.
+     * @return The current user instance.
      */
     public User setIp(final String newIp) {
         this.ip = newIp;
@@ -150,19 +124,19 @@ public class User {
     }
 
     /**
-     * Retrieves the IP of the user.
+     * Gets the IP address for the user.
      *
-     * @return The IP of the user.
+     * @return The IP address of the user.
      */
     public String getIp() {
         return this.ip;
     }
 
     /**
-     * Sets if the user is muted.
+     * Sets the muted status for the user.
      *
-     * @param newMuted If the user is muted.
-     * @return The current User instance.
+     * @param newMuted The new muted status for the user.
+     * @return The current user instance.
      */
     public User setMuted(final Boolean newMuted) {
         this.muted = newMuted;
@@ -170,19 +144,19 @@ public class User {
     }
 
     /**
-     * Retrieves if the user is muted.
+     * Gets the muted status for the user.
      *
-     * @return If the user is muted.
+     * @return The muted status of the user.
      */
     public Boolean getMuted() {
         return this.muted;
     }
 
     /**
-     * Sets if the user is banned.
+     * Sets the banned status for the user.
      *
-     * @param newBanned If the user is banned.
-     * @return The current User instance.
+     * @param newBanned The new banned status for the user.
+     * @return The current user instance.
      */
     public User setBanned(final Boolean newBanned) {
         this.banned = newBanned;
@@ -190,19 +164,19 @@ public class User {
     }
 
     /**
-     * Retrieves if the user is banned.
+     * Gets the banned status for the user.
      *
-     * @return If the user is banned.
+     * @return The banned status of the user.
      */
     public Boolean getBanned() {
         return this.banned;
     }
 
     /**
-     * Sets the time the user joined.
+     * Sets the creation timestamp for the user.
      *
-     * @param newCreatedAt The time the user joined.
-     * @return The current User instance.
+     * @param newCreatedAt The new creation timestamp for the user.
+     * @return The current user instance.
      */
     public User setCreatedAt(final LocalDateTime newCreatedAt) {
         this.createdAt = newCreatedAt;
@@ -210,9 +184,9 @@ public class User {
     }
 
     /**
-     * Retrieves the first time the user joined.
+     * Gets the creation timestamp for the user.
      *
-     * @return The first time the user joined.
+     * @return The creation timestamp of the user.
      */
     public LocalDateTime getCreatedAt() {
         return this.createdAt;

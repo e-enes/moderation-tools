@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.enes.moderation.core.ModerationLogger;
 import gg.enes.moderation.core.database.config.DatabaseConfig;
 import gg.enes.moderation.core.database.config.DatabaseType;
-import gg.enes.moderation.core.entity.Action;
 import gg.enes.moderation.core.entity.Report;
 import gg.enes.moderation.core.entity.Sanction;
 import gg.enes.moderation.core.entity.User;
@@ -61,7 +60,6 @@ public final class DatabaseManager {
 
             Set<Class<?>> entityRegistry = new HashSet<>();
             entityRegistry.add(User.class);
-            entityRegistry.add(Action.class);
             entityRegistry.add(Report.class);
             entityRegistry.add(Sanction.class);
             entityRegistry.add(gg.enes.moderation.core.entity.Connection.class);

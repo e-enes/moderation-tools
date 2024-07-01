@@ -1,6 +1,7 @@
 package gg.enes.moderation.core.database;
 
 import gg.enes.moderation.core.database.config.DatabaseType;
+import gg.enes.moderation.core.entity.User;
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
@@ -130,7 +131,7 @@ public final class TableCreator {
             return "INT";
         } else if (type == Long.class) {
             return "BIGINT";
-        } else if (type == String.class || type == UUID.class) {
+        } else if (type == String.class || type == UUID.class || type == User.class) {
             return "VARCHAR(255)";
         } else if (type == Boolean.class) {
             return "BOOLEAN";

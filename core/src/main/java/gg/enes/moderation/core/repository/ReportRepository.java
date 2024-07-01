@@ -6,7 +6,6 @@ import gg.enes.moderation.core.cache.CaffeineCacheManager;
 import gg.enes.moderation.core.cache.config.CacheConfig;
 import gg.enes.moderation.core.database.DatabaseManager;
 import gg.enes.moderation.core.entity.Report;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,20 +13,27 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public final class ReportRepository implements BaseRepository<Long, Report> {
+public final class ReportRepository {
     /**
      * The singleton instance of the report repository.
      */
     private static ReportRepository instance;
 
     /**
-     * The cache manager of the report repository.
+     * The cache manager of the report repository for reported.
      */
-    private final CacheManager<Long, Report> cacheManager;
+    private final CacheManager<UUID, List<Report>> reportedCacheManager;
+
+    /**
+     * The cache manager of the report repository for reporters.
+     */
+    private final CacheManager<UUID, List<Report>> reporterCacheManager;
 
     private ReportRepository() {
-        this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
+        this.reportedCacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
+        this.reporterCacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
     }
 
     /**
@@ -42,88 +48,119 @@ public final class ReportRepository implements BaseRepository<Long, Report> {
         return instance;
     }
 
-    @SuppressWarnings("checkstyle:LineLength")
-    @Override
+    /**
+     * Creates a new report entity in the database.
+     *
+     * @param entity The report entity to create.
+     */
     public void create(final Report entity) {
-        String sql =
-                "INSERT INTO mt_reports (report_id, reporter_id, reported_id, server, reason, details, treated, treated_by, treated_at, reported_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO mt_reports (reporter_uuid, reported_uuid, server, reason, details, treated, treated_by, treated_at, reported_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setLong(1, entity.getId());
-            stmt.setLong(2, entity.getReporterId());
-            stmt.setLong(3, entity.getReportedId());
-            stmt.setString(4, entity.getServer());
-            stmt.setString(5, entity.getReason());
-            stmt.setString(6, entity.getDetails());
-            stmt.setBoolean(7, entity.getTreated());
-            stmt.setObject(8, entity.getTreatedBy());
-            stmt.setObject(9, entity.getTreatedAt());
-            stmt.setObject(10, entity.getReportedAt());
-
-            stmt.executeUpdate();
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while creating a report entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("Entity (Report): " + entity);
-        }
-        this.cacheManager.set(entity.getId(), entity);
-    }
-
-    @Override
-    public Report read(final Long id, final Boolean force) {
-        Report report = this.cacheManager.get(id);
-        if (report != null && (force == null || !force)) {
-            return report;
-        }
-
-        String sql = "SELECT * FROM mt_reports WHERE report_id = ?";
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setLong(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    report = new Report()
-                            .setId(rs.getLong("report_id"))
-                            .setReporterId(rs.getLong("reporter_id"))
-                            .setReportedId(rs.getLong("reported_id"))
-                            .setServer(rs.getString("server"))
-                            .setReason(rs.getString("reason"))
-                            .setDetails(rs.getString("details"))
-                            .setTreated(rs.getBoolean("treated"))
-                            .setTreatedBy((Long) rs.getObject("treated_by"))
-                            .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
-                            .setReportedAt(rs.getObject("reported_at", LocalDateTime.class));
-                    this.cacheManager.set(id, report);
-                }
-            }
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while reading a report entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("ID (Report): " + id);
-        }
-
-        return report;
-    }
-
-    @SuppressWarnings("checkstyle:LineLength")
-    @Override
-    public void update(final Report entity) {
-        String sql =
-                "UPDATE mt_reports SET reporter_id = ?, reported_id = ?, server = ?, reason = ?, details = ?, treated = ?, treated_by = ?, treated_at = ?, reported_at = ? WHERE report_id = ?";
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setLong(1, entity.getReporterId());
-            stmt.setLong(2, entity.getReportedId());
+            stmt.setString(1, entity.getReporter().getUuid().toString());
+            stmt.setString(2, entity.getReported().getUuid().toString());
             stmt.setString(3, entity.getServer());
             stmt.setString(4, entity.getReason());
             stmt.setString(5, entity.getDetails());
             stmt.setBoolean(6, entity.getTreated());
-            stmt.setObject(7, entity.getTreatedBy());
+            stmt.setString(7, entity.getTreatedBy() != null ? entity.getTreatedBy().toString() : null);
+            stmt.setObject(8, entity.getTreatedAt());
+            stmt.setObject(9, entity.getReportedAt());
+
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                entity.setId(rs.getLong(1));
+            }
+        } catch (Exception e) {
+            ModerationLogger.error("An error occurred while creating a report entity.", e);
+        }
+
+        addToCache(entity.getReporter().getUuid(), "reporter", entity);
+        addToCache(entity.getReported().getUuid(), "reported", entity);
+    }
+
+    /**
+     * Retrieves all reports for a given reporter UUID.
+     *
+     * @param reporterUuid The UUID of the reporter to retrieve reports for.
+     * @return A list of reports associated with the reporter.
+     */
+    public List<Report> readAllByReporter(final UUID reporterUuid) {
+        return readAll(reporterUuid, "reporter");
+    }
+
+    /**
+     * Retrieves all reports for a given reported UUID.
+     *
+     * @param reportedUuid The UUID of the reported to retrieve reports for.
+     * @return A list of reports associated with the reported.
+     */
+    public List<Report> readAllByReported(final UUID reportedUuid) {
+        return readAll(reportedUuid, "reported");
+    }
+
+    /**
+     * Common method to retrieve all reports for a given UUID and type (reporter or reported).
+     *
+     * @param reportUuid The UUID of the user (reporter or reported).
+     * @param type       The type of reports to retrieve ("reporter" or "reported").
+     * @return A list of reports associated with the given UUID and type.
+     */
+    private List<Report> readAll(final UUID reportUuid, final String type) {
+        CacheManager<UUID, List<Report>> cacheManager = type.equals("reporter") ? this.reporterCacheManager : this.reportedCacheManager;
+        List<Report> reports = cacheManager.get(reportUuid);
+        if (reports != null) {
+            return reports;
+        }
+
+        reports = new ArrayList<>();
+        String sql = type.equals("reporter") ? "SELECT * FROM mt_reports WHERE reporter_uuid = ?" : "SELECT * FROM mt_reports WHERE reported_uuid = ?";
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, reportUuid.toString());
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    reports.add(new Report()
+                            .setId(rs.getLong("report_id"))
+                            .setReporter(UUID.fromString(rs.getString("reporter_uuid")))
+                            .setReported(UUID.fromString(rs.getString("reported_uuid")))
+                            .setServer(rs.getString("server"))
+                            .setReason(rs.getString("reason"))
+                            .setDetails(rs.getString("details"))
+                            .setTreated(rs.getBoolean("treated"))
+                            .setTreatedBy(rs.getString("treated_by") != null ? UUID.fromString(rs.getString("treated_by")) : null)
+                            .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
+                            .setReportedAt(rs.getObject("reported_at", LocalDateTime.class)));
+                }
+            }
+        } catch (Exception e) {
+            ModerationLogger.error("An error occurred while reading reports for " + type + " " + reportUuid, e);
+        }
+
+        cacheManager.set(reportUuid, reports);
+        return reports;
+    }
+
+    /**
+     * Updates an existing report entity in the database.
+     *
+     * @param entity The report entity to update.
+     */
+    public void update(final Report entity) {
+        String sql = "UPDATE mt_reports SET reporter_uuid = ?, reported_uuid = ?, server = ?, reason = ?, details = ?, treated = ?, treated_by = ?, treated_at = ?, reported_at = ? WHERE report_id = ?";
+        try (Connection connection = DatabaseManager.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, entity.getReporter().getUuid().toString());
+            stmt.setString(2, entity.getReported().getUuid().toString());
+            stmt.setString(3, entity.getServer());
+            stmt.setString(4, entity.getReason());
+            stmt.setString(5, entity.getDetails());
+            stmt.setBoolean(6, entity.getTreated());
+            stmt.setString(7, entity.getTreatedBy() != null ? entity.getTreatedBy().toString() : null);
             stmt.setObject(8, entity.getTreatedAt());
             stmt.setObject(9, entity.getReportedAt());
             stmt.setLong(10, entity.getId());
@@ -132,191 +169,45 @@ public final class ReportRepository implements BaseRepository<Long, Report> {
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while updating a report entity.", e);
         }
-        this.cacheManager.set(entity.getId(), entity);
+
+        this.reportedCacheManager.del(entity.getReported().getUuid());
+        this.reporterCacheManager.del(entity.getReporter().getUuid());
     }
 
-    @Override
-    public void delete(final Long id) {
+    /**
+     * Deletes a report entity from the database.
+     *
+     * @param reportId The ID of the report entity to delete.
+     */
+    public void deleteById(final Long reportId) {
         String sql = "DELETE FROM mt_reports WHERE report_id = ?";
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setLong(1, id);
+            stmt.setLong(1, reportId);
             stmt.executeUpdate();
+
+            this.reporterCacheManager.clear();
+            this.reportedCacheManager.clear();
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while deleting a report entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("ID (Report): " + id);
         }
-        this.cacheManager.del(id);
     }
 
     /**
-     * Retrieves all reports made by a given user.
+     * Adds a report to the cache based on the type (reporter or reported).
      *
-     * @param reporterId The ID of the reporter.
-     * @param treated The treated status of the reports.
-     * @return A list of reports made by the user.
+     * @param uuid   The UUID of the user (reporter or reported).
+     * @param type   The type of cache ("reporter" or "reported").
+     * @param report The report to add to the cache.
      */
-    public List<Report> findByReporterId(final Long reporterId, @Nullable final Boolean treated) {
-        List<Report> reports = new ArrayList<>();
-        String sql = "SELECT * FROM mt_reports WHERE reporter_id = ?";
-
-        if (treated != null) {
-            sql += " AND treated = ?";
+    private void addToCache(final UUID uuid, final String type, final Report report) {
+        CacheManager<UUID, List<Report>> cacheManager = type.equals("reporter") ? this.reporterCacheManager : this.reportedCacheManager;
+        List<Report> reports = cacheManager.get(uuid);
+        if (reports == null) {
+            reports = new ArrayList<>();
         }
-        sql += " ORDER BY reported_at DESC";
-
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setLong(1, reporterId);
-            if (treated != null) {
-                stmt.setBoolean(2, treated);
-            }
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Report report = new Report()
-                            .setId(rs.getLong("report_id"))
-                            .setReporterId(rs.getLong("reporter_id"))
-                            .setReportedId(rs.getLong("reported_id"))
-                            .setServer(rs.getString("server"))
-                            .setReason(rs.getString("reason"))
-                            .setDetails(rs.getString("details"))
-                            .setTreated(rs.getBoolean("treated"))
-                            .setTreatedBy((Long) rs.getObject("treated_by"))
-                            .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
-                            .setReportedAt(rs.getObject("reported_at", LocalDateTime.class));
-                    reports.add(report);
-                }
-            }
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while retrieving reports for reporter ID: " + reporterId, e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("ID (Reporter): " + reporterId);
-        }
-        return reports;
-    }
-
-    /**
-     * Retrieves all reports made against a given user.
-     *
-     * @param reportedId The ID of the reported user.
-     * @param treated The treated status of the reports.
-     * @return A list of reports made against the user.
-     */
-    public List<Report> findByReportedId(final Long reportedId, @Nullable final Boolean treated) {
-        List<Report> reports = new ArrayList<>();
-        String sql = "SELECT * FROM mt_reports WHERE reported_id = ?";
-
-        if (treated != null) {
-            sql += " AND treated = ?";
-        }
-        sql += " ORDER BY reported_at DESC";
-
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setLong(1, reportedId);
-            if (treated != null) {
-                stmt.setBoolean(2, treated);
-            }
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Report report = new Report()
-                            .setId(rs.getLong("report_id"))
-                            .setReporterId(rs.getLong("reporter_id"))
-                            .setReportedId(rs.getLong("reported_id"))
-                            .setServer(rs.getString("server"))
-                            .setReason(rs.getString("reason"))
-                            .setDetails(rs.getString("details"))
-                            .setTreated(rs.getBoolean("treated"))
-                            .setTreatedBy((Long) rs.getObject("treated_by"))
-                            .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
-                            .setReportedAt(rs.getObject("reported_at", LocalDateTime.class));
-                    reports.add(report);
-                }
-            }
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while retrieving reports for reported ID: " + reportedId, e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("ID (Reported): " + reportedId);
-        }
-        return reports;
-    }
-
-    /**
-     * Retrieves all treated or untreated reports.
-     *
-     * @param treated The treated status of the reports.
-     * @return A list of reports based on their treated status.
-     */
-    public List<Report> findByTreatedStatus(final Boolean treated) {
-        List<Report> reports = new ArrayList<>();
-        String sql = "SELECT * FROM mt_reports WHERE treated = ?";
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setBoolean(1, treated);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Report report = new Report()
-                            .setId(rs.getLong("report_id"))
-                            .setReporterId(rs.getLong("reporter_id"))
-                            .setReportedId(rs.getLong("reported_id"))
-                            .setServer(rs.getString("server"))
-                            .setReason(rs.getString("reason"))
-                            .setDetails(rs.getString("details"))
-                            .setTreated(rs.getBoolean("treated"))
-                            .setTreatedBy((Long) rs.getObject("treated_by"))
-                            .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
-                            .setReportedAt(rs.getObject("reported_at", LocalDateTime.class));
-                    reports.add(report);
-                }
-            }
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while retrieving reports with treated status: " + treated, e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("Treated: " + treated);
-        }
-        return reports;
-    }
-
-    /**
-     * Retrieves all reports.
-     *
-     * @return A list of all reports.
-     */
-    public List<Report> findAll() {
-        List<Report> reports = new ArrayList<>();
-        String sql = "SELECT * FROM mt_reports";
-        try (Connection connection = DatabaseManager.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                Report report = new Report()
-                        .setId(rs.getLong("report_id"))
-                        .setReporterId(rs.getLong("reporter_id"))
-                        .setReportedId(rs.getLong("reported_id"))
-                        .setServer(rs.getString("server"))
-                        .setReason(rs.getString("reason"))
-                        .setDetails(rs.getString("details"))
-                        .setTreated(rs.getBoolean("treated"))
-                        .setTreatedBy((Long) rs.getObject("treated_by"))
-                        .setTreatedAt(rs.getObject("treated_at", LocalDateTime.class))
-                        .setReportedAt(rs.getObject("reported_at", LocalDateTime.class));
-                reports.add(report);
-            }
-        } catch (Exception e) {
-            ModerationLogger.error("An error occurred while retrieving all reports.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-        }
-        return reports;
+        reports.add(report);
+        cacheManager.set(uuid, reports);
     }
 }

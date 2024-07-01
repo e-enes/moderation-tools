@@ -3,44 +3,50 @@ package gg.enes.moderation.core.entity;
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
+import gg.enes.moderation.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+/**
+ * Represents a connection entity mapped to the "mt_connections" table.
+ */
 @Table(name = "mt_connections")
 public class Connection {
+
     /**
-     * The ID of the connection.
+     * The unique identifier for the connection.
      */
     @Id()
     @Column(name = "connection_id")
     private Long id;
 
     /**
-     * The ID of the user associated with the connection.
+     * The user associated with the connection.
      */
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @Column(name = "user_uuid", nullable = false)
+    private User user;
 
     /**
-     * The IP address of the connection.
+     * The IP address associated with the connection.
      */
     @Column(name = "ip", nullable = false)
     private String ip;
 
     /**
-     * The time when the connection was created.
+     * The timestamp when the connection was established.
      */
     @Column(name = "connected_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private LocalDateTime connectedAt;
+    private LocalDateTime connectedAt = LocalDateTime.now();
 
     /**
-     * The time when the connection was closed.
+     * The timestamp when the connection was terminated.
      */
     @Column(name = "disconnected_at")
     private LocalDateTime disconnectedAt;
 
     /**
-     * Retrieves the ID of the connection.
+     * Gets the unique identifier for the connection.
      *
      * @return The ID of the connection.
      */
@@ -49,10 +55,10 @@ public class Connection {
     }
 
     /**
-     * Sets the ID of the connection.
+     * Sets the unique identifier for the connection.
      *
-     * @param newId The ID to set.
-     * @return The current Connection instance.
+     * @param newId The new ID for the connection.
+     * @return The current connection instance.
      */
     public Connection setId(final Long newId) {
         this.id = newId;
@@ -60,39 +66,44 @@ public class Connection {
     }
 
     /**
-     * Retrieves the ID of the user associated with the connection.
+     * Gets the user associated with the connection.
      *
-     * @return The ID of the user.
+     * @return The user associated with the connection.
      */
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     /**
-     * Sets the ID of the user associated with the connection.
+     * Sets the user associated with the connection using the user's UUID.
      *
-     * @param newUserId The user ID to set.
-     * @return The current Connection instance.
+     * @param userUuid The UUID of the user to associate with the connection.
+     * @return The current connection instance.
      */
-    public Connection setUserId(final Long newUserId) {
-        this.userId = newUserId;
+    public Connection setUser(final UUID userUuid) {
+        this.user = UserRepository.getInstance().read(userUuid, false);
+
+        if (this.user == null) {
+            this.user = new User().setUuid(userUuid);
+        }
+
         return this;
     }
 
     /**
-     * Retrieves the IP address of the connection.
+     * Gets the IP address associated with the connection.
      *
-     * @return The IP address of the connection.
+     * @return The IP address associated with the connection.
      */
     public String getIp() {
         return ip;
     }
 
     /**
-     * Sets the IP address of the connection.
+     * Sets the IP address associated with the connection.
      *
-     * @param newIp The IP address to set.
-     * @return The current Connection instance.
+     * @param newIp The new IP address for the connection.
+     * @return The current connection instance.
      */
     public Connection setIp(final String newIp) {
         this.ip = newIp;
@@ -100,19 +111,19 @@ public class Connection {
     }
 
     /**
-     * Retrieves the time when the connection was created.
+     * Gets the timestamp when the connection was established.
      *
-     * @return The creation time of the connection.
+     * @return The timestamp when the connection was established.
      */
     public LocalDateTime getConnectedAt() {
         return connectedAt;
     }
 
     /**
-     * Sets the time when the connection was created.
+     * Sets the timestamp when the connection was established.
      *
-     * @param newConnectedAt The creation time to set.
-     * @return The current Connection instance.
+     * @param newConnectedAt The new timestamp when the connection was established.
+     * @return The current connection instance.
      */
     public Connection setConnectedAt(final LocalDateTime newConnectedAt) {
         this.connectedAt = newConnectedAt;
@@ -120,19 +131,19 @@ public class Connection {
     }
 
     /**
-     * Retrieves the time when the connection was closed.
+     * Gets the timestamp when the connection was terminated.
      *
-     * @return The closing time of the connection.
+     * @return The timestamp when the connection was terminated.
      */
     public LocalDateTime getDisconnectedAt() {
         return disconnectedAt;
     }
 
     /**
-     * Sets the time when the connection was closed.
+     * Sets the timestamp when the connection was terminated.
      *
-     * @param newDisconnectedAt The closing time to set.
-     * @return The current Connection instance.
+     * @param newDisconnectedAt The new timestamp when the connection was terminated.
+     * @return The current connection instance.
      */
     public Connection setDisconnectedAt(final LocalDateTime newDisconnectedAt) {
         this.disconnectedAt = newDisconnectedAt;

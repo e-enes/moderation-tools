@@ -3,23 +3,25 @@ package gg.enes.moderation.core.entity;
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
+import gg.enes.moderation.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Table(name = "mt_sanctions")
 public class Sanction {
     /**
-     * The ID of the sanction.
+     * The unique identifier for the sanction.
      */
     @Id()
     @Column(name = "sanction_id")
     private Long id;
 
     /**
-     * The ID of the user to whom the sanction is applied.
+     * The user associated with the sanction.
      */
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @Column(name = "user_uuid", nullable = false)
+    private User user;
 
     /**
      * The reason for the sanction.
@@ -28,31 +30,31 @@ public class Sanction {
     private String reason;
 
     /**
-     * The type of the sanction (e.g., "ban", "mute").
+     * The type of the sanction.
      */
     @Column(name = "type", nullable = false)
     private String type;
 
     /**
-     * The time when the sanction was created.
+     * The timestamp when the sanction was created.
      */
     @Column(name = "created_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     /**
-     * The time when the sanction expires, if applicable.
+     * The timestamp when the sanction expires.
      */
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
     /**
-     * Indicates whether the sanction is currently active.
+     * Indicates if the sanction is currently active.
      */
     @Column(name = "active", nullable = false, defaultValue = "true")
     private Boolean active;
 
     /**
-     * Retrieves the ID of the sanction.
+     * Gets the unique identifier for the sanction.
      *
      * @return The ID of the sanction.
      */
@@ -61,10 +63,10 @@ public class Sanction {
     }
 
     /**
-     * Sets the ID of the sanction.
+     * Sets the unique identifier for the sanction.
      *
-     * @param newId The ID to set.
-     * @return The current Sanction instance.
+     * @param newId The new ID for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setId(final Long newId) {
         this.id = newId;
@@ -72,27 +74,32 @@ public class Sanction {
     }
 
     /**
-     * Retrieves the ID of the user to whom the sanction is applied.
+     * Gets the user associated with the sanction.
      *
-     * @return The ID of the user.
+     * @return The user associated with the sanction.
      */
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     /**
-     * Sets the ID of the user to whom the sanction is applied.
+     * Sets the user associated with the sanction using the user's UUID.
      *
-     * @param newUserId The user ID to set.
-     * @return The current Sanction instance.
+     * @param userUuid The UUID of the user to associate with the sanction.
+     * @return The current sanction instance.
      */
-    public Sanction setUserId(final Long newUserId) {
-        this.userId = newUserId;
+    public Sanction setUser(final UUID userUuid) {
+        this.user = UserRepository.getInstance().read(userUuid, false);
+
+        if (this.user == null) {
+            this.user = new User().setUuid(userUuid);
+        }
+
         return this;
     }
 
     /**
-     * Retrieves the reason for the sanction.
+     * Gets the reason for the sanction.
      *
      * @return The reason for the sanction.
      */
@@ -103,8 +110,8 @@ public class Sanction {
     /**
      * Sets the reason for the sanction.
      *
-     * @param newReason The reason to set.
-     * @return The current Sanction instance.
+     * @param newReason The new reason for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setReason(final String newReason) {
         this.reason = newReason;
@@ -112,7 +119,7 @@ public class Sanction {
     }
 
     /**
-     * Retrieves the type of the sanction.
+     * Gets the type of the sanction.
      *
      * @return The type of the sanction.
      */
@@ -123,8 +130,8 @@ public class Sanction {
     /**
      * Sets the type of the sanction.
      *
-     * @param newType The type to set.
-     * @return The current Sanction instance.
+     * @param newType The new type for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setType(final String newType) {
         this.type = newType;
@@ -132,19 +139,19 @@ public class Sanction {
     }
 
     /**
-     * Retrieves the time when the sanction was created.
+     * Gets the timestamp when the sanction was created.
      *
-     * @return The creation time of the sanction.
+     * @return The creation timestamp of the sanction.
      */
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     /**
-     * Sets the time when the sanction was created.
+     * Sets the timestamp when the sanction was created.
      *
-     * @param newCreatedAt The creation time to set.
-     * @return The current Sanction instance.
+     * @param newCreatedAt The new creation timestamp for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setCreatedAt(final LocalDateTime newCreatedAt) {
         this.createdAt = newCreatedAt;
@@ -152,19 +159,19 @@ public class Sanction {
     }
 
     /**
-     * Retrieves the time when the sanction expires, if applicable.
+     * Gets the timestamp when the sanction expires.
      *
-     * @return The expiration time of the sanction.
+     * @return The expiration timestamp of the sanction.
      */
     public LocalDateTime getExpiresAt() {
         return expiresAt;
     }
 
     /**
-     * Sets the time when the sanction expires.
+     * Sets the timestamp when the sanction expires.
      *
-     * @param newExpiresAt The expiration time to set.
-     * @return The current Sanction instance.
+     * @param newExpiresAt The new expiration timestamp for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setExpiresAt(final LocalDateTime newExpiresAt) {
         this.expiresAt = newExpiresAt;
@@ -172,19 +179,19 @@ public class Sanction {
     }
 
     /**
-     * Retrieves whether the sanction is currently active.
+     * Gets the active status of the sanction.
      *
-     * @return True if the sanction is active, false otherwise.
+     * @return The active status of the sanction.
      */
     public Boolean getActive() {
         return active;
     }
 
     /**
-     * Sets whether the sanction is currently active.
+     * Sets the active status of the sanction.
      *
-     * @param newActive The active status to set.
-     * @return The current Sanction instance.
+     * @param newActive The new active status for the sanction.
+     * @return The current sanction instance.
      */
     public Sanction setActive(final Boolean newActive) {
         this.active = newActive;

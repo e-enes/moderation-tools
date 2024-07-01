@@ -9,13 +9,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public abstract class BaseGUI implements Listener {
     /**
@@ -69,7 +73,7 @@ public abstract class BaseGUI implements Listener {
      * @param event the event
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public final void onClose(final InventoryClickEvent event) {
+    public final void onClose(final InventoryCloseEvent event) {
         if (event.getInventory().equals(this.inventory)) {
             HandlerList.unregisterAll(this);
         }
@@ -92,7 +96,19 @@ public abstract class BaseGUI implements Listener {
         }
     }
 
-    protected final ItemStack createItem(final Material material, final String name, final ArrayList<String> lore) {
+    protected final ItemStack createPlayerHead(final UUID playerUuid, final String name, final List<String> lore) {
+        ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
+
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUuid));
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+        playerHead.setItemMeta(meta);
+
+        return playerHead;
+    }
+
+    protected final ItemStack createItem(final Material material, final String name, final @Nullable List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 

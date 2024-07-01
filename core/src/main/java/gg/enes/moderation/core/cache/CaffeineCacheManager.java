@@ -37,12 +37,17 @@ public final class CaffeineCacheManager<K, V> implements CacheManager<K, V> {
     }
 
     @Override
-    public  @Nullable V get(final K key) {
+    public @Nullable V get(final K key) {
         return this.cache.getIfPresent(key);
     }
 
     @Override
     public void del(final K key) {
         this.cache.invalidate(key);
+    }
+
+    @Override
+    public void clear() {
+        this.cache.invalidateAll();
     }
 }

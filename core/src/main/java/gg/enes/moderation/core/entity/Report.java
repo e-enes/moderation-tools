@@ -3,33 +3,34 @@ package gg.enes.moderation.core.entity;
 import gg.enes.moderation.core.entity.annotations.Column;
 import gg.enes.moderation.core.entity.annotations.Id;
 import gg.enes.moderation.core.entity.annotations.Table;
+import gg.enes.moderation.core.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Table(name = "mt_reports")
 public class Report {
-
     /**
-     * The ID of the report.
+     * The unique identifier for the report.
      */
     @Id()
     @Column(name = "report_id")
     private Long id;
 
     /**
-     * The ID of the user who made the report.
+     * The user who reported the incident.
      */
-    @Column(name = "reporter_id", nullable = false)
-    private Long reporterId;
+    @Column(name = "reporter_uuid", nullable = false)
+    private User reporter;
 
     /**
-     * The ID of the user being reported.
+     * The user who was reported.
      */
-    @Column(name = "reported_id", nullable = false)
-    private Long reportedId;
+    @Column(name = "reported_uuid", nullable = false)
+    private User reported;
 
     /**
-     * The server where the report was made.
+     * The server where the incident occurred.
      */
     @Column(name = "server", nullable = false)
     private String server;
@@ -47,31 +48,31 @@ public class Report {
     private String details;
 
     /**
-     * Indicates whether the report is active.
+     * Indicates if the report has been treated (handled).
      */
     @Column(name = "treated", nullable = false, defaultValue = "false")
-    private Boolean treated;
+    private Boolean treated = false;
 
     /**
-     * The ID of the user who treated the report.
+     * The user who handled the report.
      */
     @Column(name = "treated_by")
-    private Long treatedBy;
+    private UUID treatedBy;
 
     /**
-     * The time when the report was treated.
+     * The timestamp when the report was handled.
      */
     @Column(name = "treated_at")
     private LocalDateTime treatedAt;
 
     /**
-     * The time when the report was made.
+     * The timestamp when the report was made.
      */
     @Column(name = "reported_at", nullable = false, defaultValue = "CURRENT_TIMESTAMP")
-    private LocalDateTime reportedAt;
+    private LocalDateTime reportedAt = LocalDateTime.now();
 
     /**
-     * Retrieves the ID of the report.
+     * Gets the unique identifier for the report.
      *
      * @return The ID of the report.
      */
@@ -80,10 +81,10 @@ public class Report {
     }
 
     /**
-     * Sets the ID of the report.
+     * Sets the unique identifier for the report.
      *
-     * @param newId The ID to set.
-     * @return The current Report instance.
+     * @param newId The new ID for the report.
+     * @return The current report instance.
      */
     public Report setId(final Long newId) {
         this.id = newId;
@@ -91,59 +92,69 @@ public class Report {
     }
 
     /**
-     * Retrieves the ID of the user who made the report.
+     * Gets the user who reported the incident.
      *
-     * @return The ID of the reporter.
+     * @return The user who reported the incident.
      */
-    public Long getReporterId() {
-        return reporterId;
+    public User getReporter() {
+        return reporter;
     }
 
     /**
-     * Sets the ID of the user who made the report.
+     * Sets the user who reported the incident using the reporter's UUID.
      *
-     * @param newReporterId The reporter ID to set.
-     * @return The current Report instance.
+     * @param reporterUuid The UUID of the user who reported the incident.
+     * @return The current report instance.
      */
-    public Report setReporterId(final Long newReporterId) {
-        this.reporterId = newReporterId;
+    public Report setReporter(final UUID reporterUuid) {
+        this.reporter = UserRepository.getInstance().read(reporterUuid, false);
+
+        if (this.reporter == null) {
+            this.reporter = new User().setUuid(reporterUuid);
+        }
+
         return this;
     }
 
     /**
-     * Retrieves the ID of the user being reported.
+     * Gets the user who was reported.
      *
-     * @return The ID of the reported user.
+     * @return The user who was reported.
      */
-    public Long getReportedId() {
-        return reportedId;
+    public User getReported() {
+        return reported;
     }
 
     /**
-     * Sets the ID of the user being reported.
+     * Sets the user who was reported using the reported user's UUID.
      *
-     * @param newReportedId The reported ID to set.
-     * @return The current Report instance.
+     * @param reportedUuid The UUID of the user who was reported.
+     * @return The current report instance.
      */
-    public Report setReportedId(final Long newReportedId) {
-        this.reportedId = newReportedId;
+    public Report setReported(final UUID reportedUuid) {
+        this.reported = UserRepository.getInstance().read(reportedUuid, false);
+
+        if (this.reported == null) {
+            this.reported = new User().setUuid(reportedUuid);
+        }
+
         return this;
     }
 
     /**
-     * Retrieves the server where the report was made.
+     * Gets the server where the incident occurred.
      *
-     * @return The server where the report was made.
+     * @return The server where the incident occurred.
      */
     public String getServer() {
         return server;
     }
 
     /**
-     * Sets the server where the report was made.
+     * Sets the server where the incident occurred.
      *
-     * @param newServer The server to set.
-     * @return The current Report instance.
+     * @param newServer The new server where the incident occurred.
+     * @return The current report instance.
      */
     public Report setServer(final String newServer) {
         this.server = newServer;
@@ -151,7 +162,7 @@ public class Report {
     }
 
     /**
-     * Retrieves the reason for the report.
+     * Gets the reason for the report.
      *
      * @return The reason for the report.
      */
@@ -162,8 +173,8 @@ public class Report {
     /**
      * Sets the reason for the report.
      *
-     * @param newReason The reason to set.
-     * @return The current Report instance.
+     * @param newReason The new reason for the report.
+     * @return The current report instance.
      */
     public Report setReason(final String newReason) {
         this.reason = newReason;
@@ -171,7 +182,7 @@ public class Report {
     }
 
     /**
-     * Retrieves additional details about the report.
+     * Gets additional details about the report.
      *
      * @return Additional details about the report.
      */
@@ -182,8 +193,8 @@ public class Report {
     /**
      * Sets additional details about the report.
      *
-     * @param newDetails Additional details to set.
-     * @return The current Report instance.
+     * @param newDetails The new additional details for the report.
+     * @return The current report instance.
      */
     public Report setDetails(final String newDetails) {
         this.details = newDetails;
@@ -191,19 +202,19 @@ public class Report {
     }
 
     /**
-     * Indicates whether the report is active.
+     * Checks if the report has been treated (handled).
      *
-     * @return Whether the report is active.
+     * @return True if the report has been treated; false otherwise.
      */
     public Boolean getTreated() {
         return treated;
     }
 
     /**
-     * Sets whether the report is active.
+     * Sets whether the report has been treated (handled).
      *
-     * @param newTreated Whether the report is active.
-     * @return The current Report instance.
+     * @param newTreated The new treated status for the report.
+     * @return The current report instance.
      */
     public Report setTreated(final Boolean newTreated) {
         this.treated = newTreated;
@@ -211,39 +222,39 @@ public class Report {
     }
 
     /**
-     * Retrieves the ID of the user who treated the report.
+     * Gets the UUID of the user who handled the report.
      *
-     * @return The ID of the user who treated the report.
+     * @return The UUID of the user who handled the report.
      */
-    public Long getTreatedBy() {
+    public UUID getTreatedBy() {
         return treatedBy;
     }
 
     /**
-     * Sets the ID of the user who treated the report.
+     * Sets the UUID of the user who handled the report.
      *
-     * @param newTreatedBy The ID of the user who treated the report.
-     * @return The current Report instance.
+     * @param newTreatedBy The new UUID of the user who handled the report.
+     * @return The current report instance.
      */
-    public Report setTreatedBy(final Long newTreatedBy) {
+    public Report setTreatedBy(final UUID newTreatedBy) {
         this.treatedBy = newTreatedBy;
         return this;
     }
 
     /**
-     * Retrieves the time when the report was treated.
+     * Gets the timestamp when the report was handled.
      *
-     * @return The time when the report was treated.
+     * @return The timestamp when the report was handled.
      */
     public LocalDateTime getTreatedAt() {
         return treatedAt;
     }
 
     /**
-     * Sets the time when the report was treated.
+     * Sets the timestamp when the report was handled.
      *
-     * @param newTreatedAt The time to set.
-     * @return The current Report instance.
+     * @param newTreatedAt The new timestamp when the report was handled.
+     * @return The current report instance.
      */
     public Report setTreatedAt(final LocalDateTime newTreatedAt) {
         this.treatedAt = newTreatedAt;
@@ -251,19 +262,19 @@ public class Report {
     }
 
     /**
-     * Retrieves the time when the report was made.
+     * Gets the timestamp when the report was made.
      *
-     * @return The time when the report was made.
+     * @return The timestamp when the report was made.
      */
     public LocalDateTime getReportedAt() {
         return reportedAt;
     }
 
     /**
-     * Sets the time when the report was made.
+     * Sets the timestamp when the report was made.
      *
-     * @param newReportedAt The time to set.
-     * @return The current Report instance.
+     * @param newReportedAt The new timestamp when the report was made.
+     * @return The current report instance.
      */
     public Report setReportedAt(final LocalDateTime newReportedAt) {
         this.reportedAt = newReportedAt;

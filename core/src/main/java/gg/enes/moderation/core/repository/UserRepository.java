@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public final class UserRepository implements BaseRepository<Long, User> {
+public final class UserRepository {
     /**
      * The singleton instance of the user repository.
      */
@@ -23,7 +23,7 @@ public final class UserRepository implements BaseRepository<Long, User> {
     /**
      * The cache manager of the user repository.
      */
-    private final CacheManager<Long, User> cacheManager;
+    private final CacheManager<UUID, User> cacheManager;
 
     private UserRepository() {
         this.cacheManager = new CaffeineCacheManager<>(CacheConfig.getInstance());
@@ -42,7 +42,11 @@ public final class UserRepository implements BaseRepository<Long, User> {
         return instance;
     }
 
-    @Override
+    /**
+     * Creates a new user entity in the database.
+     *
+     * @param entity The user entity to create.
+     */
     public void create(final User entity) {
         String sql = "INSERT INTO mt_users (user_id, uuid, username, ip, muted, banned, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseManager.getConnection();
@@ -59,17 +63,21 @@ public final class UserRepository implements BaseRepository<Long, User> {
             stmt.executeUpdate();
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while creating a user entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("Entity (User): " + entity);
         }
 
-        this.cacheManager.set(entity.getId(), entity);
+        this.cacheManager.set(entity.getUuid(), entity);
     }
 
-    @Override
-    public User read(final Long id, final @Nullable Boolean force) {
-        User user = this.cacheManager.get(id);
+    /**
+     * Reads a user entity from the database using the provided UUID.
+     * Optionally forces a database read bypassing the cache.
+     *
+     * @param uuid  The UUID of the user entity to read.
+     * @param force If true, forces a database read even if the entity is cached.
+     * @return The user entity, or null if not found.
+     */
+    public User read(final UUID uuid, final @Nullable Boolean force) {
+        User user = this.cacheManager.get(uuid);
 
         if (user != null && (force == null || !force)) {
             return user;
@@ -79,37 +87,38 @@ public final class UserRepository implements BaseRepository<Long, User> {
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setLong(1, id);
+            stmt.setString(1, uuid.toString());
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     user = new User()
                             .setId(rs.getLong("user_id"))
-                            .setUuid((UUID) rs.getObject("uuid"))
+                            .setUuid(UUID.fromString(rs.getString("uuid")))
                             .setUsername(rs.getString("username"))
                             .setIp(rs.getString("ip"))
                             .setMuted(rs.getBoolean("muted"))
                             .setBanned(rs.getBoolean("banned"))
                             .setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
-                    this.cacheManager.set(id, user);
+                    this.cacheManager.set(uuid, user);
                 }
             }
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while reading a user entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("Entity (User): " + user);
         }
 
         return user;
     }
 
-    @Override
+    /**
+     * Updates an existing user entity in the database and updates the cache.
+     *
+     * @param entity The user entity to update.
+     */
     public void update(final User entity) {
         String sql = "UPDATE mt_users SET uuid = ?, username = ?, ip = ?, muted = ?, banned = ?, created_at = ? WHERE user_id = ?";
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setObject(1, entity.getUuid());
+            stmt.setString(1, entity.getUuid().toString());
             stmt.setString(2, entity.getUsername());
             stmt.setString(3, entity.getIp());
             stmt.setBoolean(4, entity.getMuted());
@@ -121,24 +130,26 @@ public final class UserRepository implements BaseRepository<Long, User> {
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while updating a user entity.", e);
         }
-        this.cacheManager.set(entity.getId(), entity);
+
+        this.cacheManager.set(entity.getUuid(), entity);
     }
 
-    @Override
-    public void delete(final Long id) {
-        String sql = "DELETE FROM mt_users WHERE user_id = ?";
+    /**
+     * Deletes a user entity from the database and removes it from the cache.
+     *
+     * @param uuid The UUID of the user entity to delete.
+     */
+    public void delete(final UUID uuid) {
+        String sql = "DELETE FROM mt_users WHERE uuid = ?";
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
-            stmt.setLong(1, id);
+            stmt.setString(1, uuid.toString());
             stmt.executeUpdate();
         } catch (Exception e) {
             ModerationLogger.error("An error occurred while deleting a user entity.", e);
-
-            ModerationLogger.debug("SQL: " + sql);
-            ModerationLogger.debug("ID (User): " + id);
         }
 
-        this.cacheManager.del(id);
+        this.cacheManager.del(uuid);
     }
 }

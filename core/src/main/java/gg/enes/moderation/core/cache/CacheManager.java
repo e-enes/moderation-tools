@@ -12,7 +12,7 @@ public interface CacheManager<K, V> {
     /**
      * Sets a key in the cache.
      *
-     * @param key The key to set.
+     * @param key   The key to set.
      * @param value The value to set.
      */
     void set(K key, V value);
@@ -31,4 +31,9 @@ public interface CacheManager<K, V> {
      * @param key The key to remove.
      */
     void del(K key);
+
+    /**
+     * Clears the cache.
+     */
+    void clear();
 }

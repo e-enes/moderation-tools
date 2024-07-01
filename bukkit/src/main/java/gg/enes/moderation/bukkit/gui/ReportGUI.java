@@ -1,29 +1,28 @@
 package gg.enes.moderation.bukkit.gui;
 
 import gg.enes.moderation.bukkit.ModerationLanguage;
+import gg.enes.moderation.bukkit.enums.ReportType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.List;
 
 public final class ReportGUI extends BaseGUI {
     /**
-     * The player.
+     * The player to report.
      */
-    private final Player player;
+    private final Player target;
 
     /**
      * Creates a new report GUI.
      *
-     * @param newPlayer the player
+     * @param newTarget the player to report
      */
-    public ReportGUI(final Player newPlayer) {
-        this.player = newPlayer;
+    public ReportGUI(final Player newTarget) {
+        this.target = newTarget;
         decorate();
     }
 
@@ -34,22 +33,10 @@ public final class ReportGUI extends BaseGUI {
 
     @Override
     public void decorate() {
-        ItemStack playerHead = createPlayerHead(player.getUniqueId(), ModerationLanguage.getMessage("gui.report.button.head", player.getName()));
+        ItemStack playerHead = createPlayerHead(this.target.getUniqueId(), ModerationLanguage.getMessage("gui.report.button.head", this.target.getName()), List.of());
         setItem(4, playerHead, event -> { });
 
         ItemStack cheating = createItem(Material.DIAMOND_SWORD, ModerationLanguage.getMessage("gui.report.button.cheating.title"), ModerationLanguage.getMessages("gui.report.button.cheating.lore"));
-        setItem(20, cheating, event -> { });
-    }
-
-    private ItemStack createPlayerHead(final UUID playerUuid, final String name, final String... lore) {
-        ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta meta = (SkullMeta) playerHead.getItemMeta();
-
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUuid));
-        meta.setDisplayName(name);
-        meta.setLore(Arrays.asList(lore));
-        playerHead.setItemMeta(meta);
-
-        return playerHead;
+        setItem(20, cheating, event -> new ReportConfirmGUI(this.target, ReportType.CHEATING).open((Player) event.getWhoClicked()));
     }
 }
