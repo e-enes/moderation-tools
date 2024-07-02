@@ -1,10 +1,10 @@
 package gg.enes.moderation.bukkit.utils;
 
-import gg.enes.moderation.bukkit.ModerationLanguage;
 import gg.enes.moderation.bukkit.enums.ReportType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import static gg.enes.moderation.bukkit.ModerationLanguage.getMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class ModeratorUtil {
                 return;
             }
 
-            player.sendMessage(ModerationLanguage.getMessage("message.moderation.notify.reported", target.getName(), reportType.toString()));
+            player.sendMessage(getMessage("message.moderation.notify.reported", target.getName(), reportType.toString()));
         });
     }
 }

@@ -12,7 +12,7 @@ import static gg.enes.moderation.bukkit.ModerationLanguage.getMessages;
 import java.util.List;
 import java.util.Map;
 
-public final class ReportGUI extends BaseGUI {
+public final class ReportMessageGUI extends BaseGUI {
     /**
      * The player to report.
      */
@@ -22,43 +22,40 @@ public final class ReportGUI extends BaseGUI {
      * Defines the report buttons with their properties.
      */
     private static final Map<Integer, ReportType> REPORT_BUTTONS = Map.of(
-            20, ReportType.CHEATING,
-            22, ReportType.BAD_NAME,
-            24, ReportType.BAD_SKIN,
-            30, ReportType.CROSS_TEAMING,
-            32, ReportType.MESSAGE
+            20, ReportType.PUBLIC_MESSAGE,
+            22, ReportType.PRIVATE_MESSAGE,
+            24, ReportType.BACK
     );
 
     /**
-     * Creates a new report GUI.
+     * Creates a new report message GUI.
      *
      * @param newTarget the player to report
      */
-    public ReportGUI(final Player newTarget) {
+    public ReportMessageGUI(final Player newTarget) {
         this.target = newTarget;
         decorate();
     }
 
     @Override
     protected Inventory createInventory() {
-        return Bukkit.createInventory(null, 9 * 6, getMessage("gui.report.title"));
+        return Bukkit.createInventory(null, 9 * 6, getMessage("gui.report.message.title"));
     }
 
     @Override
     public void decorate() {
-        ItemStack playerHead = createPlayerHead(this.target.getUniqueId(), getMessage("gui.report.button.head", this.target.getName()), List.of());
+        ItemStack playerHead = createPlayerHead(this.target.getUniqueId(), getMessage("gui.report.message.button.head", this.target.getName()), List.of());
         setItem(4, playerHead, event -> { });
 
-        // Add report buttons to the GUI
         REPORT_BUTTONS.forEach((slot, properties) -> {
             Material material = properties.getMaterial();
             String key = properties.getKey();
 
-            ItemStack item = createItem(material, getMessage("gui.report.button." + key + ".title"), getMessages("gui.report.button." + key + ".lore"));
-            if (!properties.equals(ReportType.MESSAGE)) {
+            ItemStack item = createItem(material, getMessage("gui.report.message.button." + key + ".title"), getMessages("gui.report.message.button." + key + ".lore"));
+            if (!properties.equals(ReportType.BACK)) {
                 setItem(slot, item, event -> new ReportConfirmGUI(this.target, properties).open((Player) event.getWhoClicked()));
             } else {
-                setItem(slot, item, event -> new ReportMessageGUI(this.target).open((Player) event.getWhoClicked()));
+                setItem(slot, item, event -> new ReportGUI(this.target).open((Player) event.getWhoClicked()));
             }
         });
     }

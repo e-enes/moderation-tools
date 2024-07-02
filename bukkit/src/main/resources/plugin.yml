@@ -16,3 +16,7 @@ commands:
   report:
     description: Report a player.
     usage: /report <player>
+permissions:
+  moderationtools.moderator:
+    description: Allows the player to use moderation tools.
+    default: op

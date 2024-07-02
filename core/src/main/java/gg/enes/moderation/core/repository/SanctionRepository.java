@@ -48,16 +48,17 @@ public final class SanctionRepository {
      * @param entity The sanction entity to create.
      */
     public void create(final Sanction entity) {
-        String sql = "INSERT INTO mt_sanctions (user_uuid, reason, type, created_at, expires_at, active) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO mt_sanctions (user_uuid, moderator_uuid, reason, type, created_at, expires_at, active) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, entity.getUser().getUuid().toString());
-            stmt.setString(2, entity.getReason());
-            stmt.setString(3, entity.getType());
-            stmt.setObject(4, entity.getCreatedAt());
-            stmt.setObject(5, entity.getExpiresAt());
-            stmt.setBoolean(6, entity.getActive());
+            stmt.setString(2, entity.getModerator().getUuid().toString());
+            stmt.setString(3, entity.getReason());
+            stmt.setString(4, entity.getType());
+            stmt.setObject(5, entity.getCreatedAt());
+            stmt.setObject(6, entity.getExpiresAt());
+            stmt.setBoolean(7, entity.getActive());
 
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
@@ -94,6 +95,7 @@ public final class SanctionRepository {
                     sanctions.add(new Sanction()
                             .setId(rs.getLong("sanction_id"))
                             .setUser(userUuid)
+                            .setModerator(UUID.fromString(rs.getString("moderator_uuid")))
                             .setReason(rs.getString("reason"))
                             .setType(rs.getString("type"))
                             .setCreatedAt(rs.getObject("created_at", LocalDateTime.class))
@@ -147,6 +149,7 @@ public final class SanctionRepository {
                     sanction = new Sanction()
                             .setId(rs.getLong("sanction_id"))
                             .setUser(userUuid)
+                            .setModerator(UUID.fromString(rs.getString("moderator_uuid")))
                             .setReason(rs.getString("reason"))
                             .setType(rs.getString("type"))
                             .setCreatedAt(rs.getObject("created_at", LocalDateTime.class))
@@ -203,6 +206,7 @@ public final class SanctionRepository {
                     Sanction sanction = new Sanction()
                             .setId(rs.getLong("sanction_id"))
                             .setUser(userUuid)
+                            .setModerator(UUID.fromString(rs.getString("moderator_uuid")))
                             .setReason(rs.getString("reason"))
                             .setType(rs.getString("type"))
                             .setCreatedAt(rs.getObject("created_at", LocalDateTime.class))
@@ -223,17 +227,18 @@ public final class SanctionRepository {
      * @param entity The sanction entity to update.
      */
     public void update(final Sanction entity) {
-        String sql = "UPDATE mt_sanctions SET user_uuid = ?, reason = ?, type = ?, created_at = ?, expires_at = ?, active = ? WHERE sanction_id = ?";
+        String sql = "UPDATE mt_sanctions SET user_uuid = ?, moderator_uuid = ?, reason = ?, type = ?, created_at = ?, expires_at = ?, active = ? WHERE sanction_id = ?";
         try (Connection connection = DatabaseManager.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
 
             stmt.setString(1, entity.getUser().getUuid().toString());
-            stmt.setString(2, entity.getReason());
-            stmt.setString(3, entity.getType());
-            stmt.setObject(4, entity.getCreatedAt());
-            stmt.setObject(5, entity.getExpiresAt());
-            stmt.setBoolean(6, entity.getActive());
-            stmt.setLong(7, entity.getId());
+            stmt.setString(2, entity.getModerator().getUuid().toString());
+            stmt.setString(3, entity.getReason());
+            stmt.setString(4, entity.getType());
+            stmt.setObject(5, entity.getCreatedAt());
+            stmt.setObject(6, entity.getExpiresAt());
+            stmt.setBoolean(7, entity.getActive());
+            stmt.setLong(8, entity.getId());
 
             stmt.executeUpdate();
         } catch (Exception e) {

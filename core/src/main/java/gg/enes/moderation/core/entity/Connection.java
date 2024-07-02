@@ -8,9 +8,6 @@ import gg.enes.moderation.core.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Represents a connection entity mapped to the "mt_connections" table.
- */
 @Table(name = "mt_connections")
 public class Connection {
 

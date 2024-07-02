@@ -24,6 +24,12 @@ public class Sanction {
     private User user;
 
     /**
+     * The moderator who issued the sanction.
+     */
+    @Column(name = "moderator_uuid", nullable = false)
+    private User moderator;
+
+    /**
      * The reason for the sanction.
      */
     @Column(name = "reason", nullable = false)
@@ -93,6 +99,31 @@ public class Sanction {
 
         if (this.user == null) {
             this.user = new User().setUuid(userUuid);
+        }
+
+        return this;
+    }
+
+    /**
+     * Gets the moderator who issued the sanction.
+     *
+     * @return The moderator who issued the sanction.
+     */
+    public User getModerator() {
+        return moderator;
+    }
+
+    /**
+     * Sets the moderator who issued the sanction using the moderator's UUID.
+     *
+     * @param moderatorUuid The UUID of the moderator who issued the sanction.
+     * @return The current sanction instance.
+     */
+    public Sanction setModerator(final UUID moderatorUuid) {
+        this.moderator = UserRepository.getInstance().read(moderatorUuid, false);
+
+        if (this.moderator == null) {
+            this.moderator = new User().setUuid(moderatorUuid);
         }
 
         return this;
